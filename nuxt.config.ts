@@ -1,4 +1,5 @@
 import type { NuxtPage } from "nuxt/schema";
+import { applyAuthMiddleware } from "./.nuxt/hooks/pages-extend-auth";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -18,6 +19,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: ["@nuxtjs/google-fonts", "@nuxt/ui", "@nuxt/icon"],
+  ui: {},
   css: ["~/assets/css/main.css"],
   googleFonts: {
     families: {},
@@ -27,6 +29,7 @@ export default defineNuxtConfig({
     coingeckoApiKey: "CG-FHNYSHhxaAGHFaAvoc2QNrFW",
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
+      domainUrl: process.env.DOMAIN_URL,
     },
   },
 
@@ -35,34 +38,8 @@ export default defineNuxtConfig({
   },
 
   hooks: {
-    "pages:extend"(pages) {
-      const EXCLUDED_PREFIX = "/auth/";
-
-      function setMiddleware(pages: NuxtPage[]) {
-        for (const page of pages) {
-          const pagePath = page.path;
-
-          // Check if the route path starts with the excluded prefix '/auth/'
-          const isAuthRoute = pagePath.startsWith(EXCLUDED_PREFIX);
-
-          // Apply 'auth' middleware ONLY if it is NOT an authentication route
-          if (!isAuthRoute) {
-            console.log(`Applying 'auth' middleware to page: ${pagePath}`);
-
-            page.meta ||= {};
-            // Append middleware
-            page.meta.middleware = [...(page.meta.middleware || []), "auth"];
-          } else {
-            console.log(`Skipping middleware for auth route: ${pagePath}`);
-          }
-
-          // Recursively check children
-          if (page.children) {
-            setMiddleware(page.children);
-          }
-        }
-      }
-      setMiddleware(pages);
+    "pages:extend"(pages: NuxtPage[]) {
+      applyAuthMiddleware(pages);
     },
   },
 });

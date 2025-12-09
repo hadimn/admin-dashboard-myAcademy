@@ -3,12 +3,6 @@ useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - admin dashboard` : "admin dashboard";
   },
-  script: [
-    {
-      src: "https://third-party-script.com",
-      tagPosition: "bodyOpen",
-    },
-  ],
 });
 </script>
 

@@ -1,14 +1,17 @@
-export const useCoursesShowCourse = (courseId: string|string[]|undefined) => {
-  const {
-    data: course,
+import type { Course } from "~/types/course";
+import { useApi } from "../api/useApi";
+import type { ApiResponse } from "~/types/apiResponse";
+
+export const useShowCourse = (courseId: string | string[] | undefined) => {
+  const { data, pending, error, refresh } = useApi<ApiResponse<Course>>(
+    "get",
+    `/courses/${courseId}`
+  );
+
+  return {
+    course: data,
     pending,
     error,
-    refresh,
-  } = useFetch<any>(`http://127.0.0.1:8000/api/admin/courses/${courseId}`);
-
-  const refetch = async () => {
-    return refresh();
+    refetch: refresh,
   };
-
-  return {course, pending, error, refetch};
-}
+};

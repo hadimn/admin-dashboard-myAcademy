@@ -29,13 +29,13 @@
         :badge="3"
       />
 
-      <UDropdown :items="notificationItems">
+      <UDropdownMenu :items="notificationItems">
         <UButton
           icon="i-heroicons-ellipsis-vertical"
           color="neutral"
           variant="ghost"
         />
-      </UDropdown>
+      </UDropdownMenu>
     </div>
   </header>
 </template>

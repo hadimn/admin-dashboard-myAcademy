@@ -1,21 +1,16 @@
 // composables/useCourses.ts
-import { useUrlDefault } from "~/composables/urlDefault";
+import type { ApiResponse } from '~/types/apiResponse'
+import { useApi } from '../api/useApi'
+import type { Course } from '~/types/course'
 
-export const useCourses = () => {
-  const config = useRuntimeConfig();
+export const useAllCourses = () => {
+  const { data, pending, error, refresh } =
+    useApi<ApiResponse<Course[]>>('get', '/courses')
 
-  const apiBaseUrl = config.public.apiBaseUrl;
-  console.log(config);
-  const {
-    data: courses,
+  return {
+    courses: data,
     pending,
     error,
-    refresh,
-  } = useUrlDefault("GET", "/courses");
-
-  const refetch = async () => {
-    await refresh();
-  };
-
-  return { courses, pending, error, refetch };
-};
+    refetch: refresh,
+  }
+}
