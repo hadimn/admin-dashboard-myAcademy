@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type SingleBadgeCardVue from "~/components/badges/SingleBadgeCard.vue";
 import SingleCourseCard from "~/components/courses/SingleCourseCard.vue";
 
 const route = useRoute();
 
-const courseId = route.params.id;
+const badgeId = route.params.id;
 
 definePageMeta({
   validate(route) {
@@ -12,7 +13,7 @@ definePageMeta({
 });
 
 // Scanned composable from nuxt.config.ts "useCoursesShowCourse()" method
-const { course, pending, error, refetch } = useShowCourse(courseId);
+const { badge, pending, error, refetch } = useShowBadge(badgeId);
 
 onMounted(() => {
   refetch();
@@ -26,15 +27,15 @@ onMounted(() => {
       <UProgress :v-model="pending" />
     </div>
     <!-- success -->
-    <div v-if="course?.data">
-      <SingleCourseCard :course="course?.data" />
+    <div v-if="badge?.data">
+      <BadgesSingleBadgeCard :badge="badge?.data" />
     </div>
     <!-- error -->
     <div v-if="error" class="bg-error-50">
       {{ error.message }}
-      <div v-if="!course?.data">
+      <div v-if="!badge?.data">
         <UAlert icon="i-heroicons-exclamation-triangle" color="warning" variant="soft" title="Warning!"
-          :description="`course with id ${courseId} is missing!`" :close-button="{
+          :description="`course with id ${badgeId} is missing!`" :close-button="{
             icon: 'i-heroicons-x-mark-20-solid',
             color: 'orange',
             variant: 'link',

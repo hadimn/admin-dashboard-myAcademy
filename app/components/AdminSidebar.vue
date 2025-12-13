@@ -5,11 +5,9 @@ const route = useRoute();
 const navigation = [
   { name: "Dashboard", to: "/", icon: "i-heroicons-home" },
   { name: "courses", to: "/courses", icon: "i-hugeicons-course" },
-  { name: "badges", to: "/badges", icon: "i-material-symbols-badge-outline" },
+  { name: "badges", to: "/badges", icon: "i-simple-line-icons-badge" },
   { name: "Analytics", to: "/analytics", icon: "i-heroicons-chart-bar" },
   { name: "Users", to: "/users", icon: "i-heroicons-users", badge: "24" },
-  // { name: 'Products', to: '/products', icon: 'i-heroicons-shopping-bag' },
-  // { name: 'Orders', to: '/orders', icon: 'i-heroicons-shopping-cart', badge: '12' },
   { name: "Settings", to: "/settings", icon: "i-heroicons-cog-6-tooth" },
 ];
 

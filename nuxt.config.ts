@@ -3,27 +3,10 @@ import { applyAuthMiddleware } from "./.nuxt/hooks/pages-extend-auth";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  app: {
-    pageTransition: {
-      name: "slide-right",
-      mode: "out-in",
-    },
-    head: {
-      htmlAttrs: {
-        lang: "en",
-      },
-      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
-    },
-  },
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
   modules: ["@nuxtjs/google-fonts", "@nuxt/ui", "@nuxt/icon"],
-  ui: {},
-  css: ["~/assets/css/main.css"],
-  googleFonts: {
-    families: {},
-  },
 
   runtimeConfig: {
     coingeckoApiKey: "CG-FHNYSHhxaAGHFaAvoc2QNrFW",
@@ -33,8 +16,42 @@ export default defineNuxtConfig({
     },
   },
 
+  typescript: {
+    strict: true,
+    typeCheck: true,
+  },
+
   imports: {
-    dirs: ["~/composables", "~/composables/**"],
+    dirs: [
+      "config/resources", // Auto-import resource configs
+      "~/composables",
+      "~/composables/**",
+    ],
+  },
+
+  app: {
+    pageTransition: {
+      name: "slide-right",
+      mode: "out-in",
+    },
+    head: {
+      title: "Admin Dashboard",
+      meta: [
+        { charset: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+      ],
+      htmlAttrs: {
+        lang: "en",
+      },
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" }
+      ],
+    },
+  },
+  ui: {},
+  css: ["~/assets/css/main.css"],
+  googleFonts: {
+    families: {},
   },
 
   hooks: {

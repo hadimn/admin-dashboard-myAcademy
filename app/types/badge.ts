@@ -7,3 +7,10 @@ export interface badge {
   criteria: Record<string,any>;
   points: number;
 }
+
+export type BadgeWithAvatar = badge & {
+  avatar: {
+    src: string;
+    alt: string;
+  };
+};

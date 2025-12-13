@@ -4,12 +4,14 @@ useHead({
     return titleChunk ? `${titleChunk} - admin dashboard` : "admin dashboard";
   },
 });
+
+const toaster = {position:'top-right'} as const;
 </script>
 
 <template>
   <div>
     <NuxtLoadingIndicator />
-    <UApp>
+    <UApp :toaster="toaster">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>

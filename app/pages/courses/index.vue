@@ -22,7 +22,9 @@ const tableData = computed<CourseWithAvatar[]>(() => {
 });
 
 const filteredItems = computed<CourseWithAvatar[]>(() => {
-  if (!tableData.value.length) return [];
+  if (!tableData.value.length) {
+    return []
+  };
 
   if (!searchQuery.value) return tableData.value;
 
@@ -31,7 +33,9 @@ const filteredItems = computed<CourseWithAvatar[]>(() => {
   return tableData.value.filter(
     (course) =>
       course.title.toLowerCase().includes(query) ||
-      course.description.toLowerCase().includes(query)
+      course.course_id.toString().toLowerCase().includes(query) ||
+      course.description.toLowerCase().includes(query) ||
+      course.language.toLowerCase().includes(query)
   );
 });
 
@@ -63,7 +67,8 @@ const columns: TableColumn<CourseWithAvatar>[] = [
     header: "Order",
   },
   {
-    id: 'action'
+    id: 'action',
+    header: 'Actions',
   }
 ];
 
@@ -71,13 +76,13 @@ function getDropdownActions(course: Course): DropdownMenuItem[][] {
   return [
     [
       {
-        label: 'Copy user Id',
+        label: 'Copy course Id',
         icon: 'i-lucide-copy',
         onSelect: () => {
           copy(course.course_id.toString())
 
           toast.add({
-            title: 'User ID copied to clipboard!',
+            title: 'Course ID copied to clipboard!',
             color: 'success',
             icon: 'i-lucide-circle-check'
           })
@@ -95,56 +100,81 @@ function getDropdownActions(course: Course): DropdownMenuItem[][] {
       {
         label: 'View',
         icon: 'i-lets-icons-view',
-        onSelect: ()=>{
+        onSelect: () => {
           navigateTo(`/courses/${course.course_id}`);
         }
       },
       {
         label: 'Delete',
         icon: 'i-lucide-trash',
-        color: 'error'
+        color: 'error',
+        onSelect: async () => {
+          const response = await useCoursesDelete(String(course.course_id));
+          toast.add({
+            title: `${response.message}`,
+            description: `course: "${response.data.title}" has been deleted successfuly!`,
+            class:"font-bold",
+          });
+          refetch();
+        }
       }
     ]
   ]
 };
+
+onMounted(async () => {
+  await refetch();
+})
 </script>
 
 <template>
-  <div class="p-6 space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-bold">All Courses</h2>
+  <div>
+    <!-- Loading Skeleton -->
+    <CoursesSkeletonLoader v-if="pending" />
+    <!-- Page Header -->
+    <div v-if="!pending" class="mb-2 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Courses</h1>
+        <p class="mt-2 text-gray-600">Manage and organize your courses</p>
+      </div>
 
       <UButton color="primary" @click="() => refetch()" :loading="pending">
         Refresh
       </UButton>
     </div>
 
-    <!-- Loading -->
-    <div v-if="pending" class="flex justify-center py-10">
-      <UProgress :value="50" />
-    </div>
+    <!-- Card Container -->
+    <UCard v-if="!pending">
+      <!-- Card Header -->
+      <template #header>
+        <div class="flex items-center justify-between">
+          <UButton icon="i-gridicons-create" color="primary" to="/courses/create" :loading="pending">
+            Create New Course
+          </UButton>
+          <h3 class="text-lg font-semibold text-gray-900">All Courses</h3>
 
-    <!-- Error -->
-    <div v-if="error" class="text-red-500 bg-red-100 p-4 rounded-md">
-      {{ error }}
-    </div>
+          <UInput v-model="searchQuery" placeholder="Search courses..." icon="i-heroicons-magnifying-glass" />
+        </div>
+      </template>
 
-    <!-- Courses Grid -->
-    <div v-if="courses?.data" class="space-y-4">
-      <input type="text" v-model="searchQuery" placeholder="Search items..." class="border p-2 rounded w-full" />
+      <!-- Error -->
+      <div v-if="error" class="text-red-500 bg-red-100 p-4 rounded-md">
+        {{ error.cause }}
+      </div>
 
-      <UTable :data="filteredItems" :columns="columns" :loading="pending" sticky>
+      <!-- Table -->
+      <UTable v-if="courses?.data" :data="filteredItems" :columns="columns" :loading="pending">
         <template #action-cell="{ row }">
           <UDropdownMenu :items="getDropdownActions(row.original)">
             <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Actions" />
           </UDropdownMenu>
         </template>
       </UTable>
-    </div>
 
-    <p v-if="courses?.data?.length === 0" class="text-center text-gray-500">
-      No courses available.
-    </p>
+      <!-- Empty State -->
+      <div v-if="courses?.data?.length === 0" class="py-10 text-center text-gray-500">
+        No courses available.
+      </div>
+    </UCard>
   </div>
 </template>

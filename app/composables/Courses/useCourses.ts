@@ -1,11 +1,11 @@
 // composables/useCourses.ts
 import type { ApiResponse } from '~/types/apiResponse'
-import { useApi } from '../api/useApi'
+import { ApiUseFetch } from '../api/useApi'
 import type { Course } from '~/types/course'
 
 export const useAllCourses = () => {
   const { data, pending, error, refresh } =
-    useApi<ApiResponse<Course[]>>('get', '/courses')
+    ApiUseFetch<ApiResponse<Course[]>>('get', '/courses')
 
   return {
     courses: data,

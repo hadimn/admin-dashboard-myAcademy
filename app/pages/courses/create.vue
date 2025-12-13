@@ -1,78 +1,56 @@
 <script setup lang="ts">
+import { useCoursesCreate } from '~/composables/Courses/create';
 
 // Import composable functions
 const {
-  // State
-  course,
-  pending,
-  error,
+  schema,
+  state,
   uploadError,
   isUploading,
   uploadProgress,
-  state,
-  imageFile,
-  videoFile,
-  
+
   // Methods
-  onImageFileChange,
-  onVideoFileChange,
-  formSubmit,
+  onVideoChange,
+  onImageChange,
   onError,
-  validate,
   formatFileSize,
-  
+  formSubmit,
+
   // Constants
   languages,
-  courseId
-} = useEditCourse();
+  videoFile,
+  imageFile,
+} = useCoursesCreate();
 </script>
 
 <template>
   <div>
-    <!-- Loading / Error -->
-    <div v-if="pending" class="mb-4">
-      <UProgress :value="50" />
-    </div>
-
-    <div v-if="error" class="mb-4 bg-error-50 p-4 rounded">
-      {{ error.message }}
-    </div>
-
-    <!-- Upload Error -->
-    <div v-if="uploadError" class="mb-4 bg-error-50 p-4 rounded">
-      Upload Error: {{ uploadError }}
-    </div>
-
-    <!-- Form -->
-    <UCard v-if="course?.data">
-      <UForm :validate="validate" :state="state" class="grid grid-cols-2 m-2 gap-3" @submit="formSubmit"
-        @error="onError">
+    <UCard>
+      <UForm @error="onError" :schema="schema" :state="state" class="grid grid-cols-2 m-2 gap-3" @submit="formSubmit">
         <!-- Header -->
         <div class="flex items-center justify-between border-b pb-3 col-span-2">
           <div>
-            <h2 class="text-xl font-bold text-gray-900">
-              <NuxtLink style="color: blue;" to="/courses">Courses</NuxtLink> / <NuxtLink style="color: blue;" :to="`/courses/${courseId}`">ID: {{ courseId }}</NuxtLink> / Edit
-            </h2>
+            <h2 class="text-xl font-bold text-gray-900">Create New Course</h2>
           </div>
         </div>
 
-        <!-- Title -->
-        <UFormField label="Title" name="title" required class=" lg:col-span-2">
-          <UInput v-model="state.title" placeholder="Enter course title"
-            class="w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
+        <!-- title input -->
+        <UFormField label="Title" name="title" required class="col-span-2">
+          <UInput v-model="state.title" placeholder="Write a short course title"
+            class="w-full max-w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
         </UFormField>
 
-        <!-- Description -->
-        <UFormField label="Description" name="description" required class="lg:col-span-2">
+        <!-- description input -->
+        <UFormField label="Description" name="description" required class="col-span-2">
           <UTextarea v-model="state.description" :rows="2" :maxrows="2" placeholder="Write a short course description"
             class="w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
         </UFormField>
 
-        <!-- Video Upload -->
-        <UFormField label="Video File">
+        <!-- video input -->
+        <UFormField label="Video File" name="video_url" class="col-span-2">
           <div
             class="relative group border-2 border-dashed rounded-2xl p-5 text-center transition-all hover:border-primary hover:bg-primary/5">
-            <UInput type="file" @change="onVideoFileChange" accept="video/*" :disabled="isUploading"
+            <UInput @change="onVideoChange" type="file" accept="video/*"
               class="absolute inset-0 opacity-0 cursor-pointer" />
 
             <div class="space-y-2">
@@ -90,11 +68,11 @@ const {
           </div>
         </UFormField>
 
-        <!-- Image Upload -->
-        <UFormField label="Image File">
+        <!-- image input -->
+        <UFormField label="Image File" name="image_url" class="col-span-2">
           <div
             class="relative group border-2 border-dashed rounded-2xl p-5 text-center transition-all hover:border-primary hover:bg-primary/5">
-            <UInput type="file" @change="onImageFileChange" accept="image/*" :disabled="isUploading"
+            <UInput @change="onImageChange" type="file" accept="image/*" :disabled="isUploading"
               class="absolute inset-0 opacity-0 cursor-pointer" />
 
             <div class="space-y-2">
@@ -114,19 +92,19 @@ const {
 
         <!-- Language -->
         <UFormField label="Language" name="language" required>
-          <USelect v-model="state.language" :items="languages" placeholder="Select language" :disabled="isUploading"
-            class="rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
+          <USelectMenu v-model="state.language" :items="languages" placeholder="Select language"
+            class="w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
         </UFormField>
 
         <!-- Order -->
         <UFormField label="Display Order" name="order">
-          <UInput v-model="state.order" type="number" min="0" placeholder="0" :disabled="isUploading"
-            class="rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
+          <UInput v-model="state.order" type="number" min="0" placeholder="0"
+            class="w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
         </UFormField>
 
         <div class="col-span-2 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
           <!-- cancel button -->
-          <UButton :to="`/courses/${courseId}`" color="error" size="md" :disabled="isUploading"
+          <UButton to="/courses" color="error" size="md"
             class="w-full sm:w-auto px-6 sm:px-10 py-2.5 rounded-2xl shadow-lg hover:shadow-xl transition-all">
             Cancel
           </UButton>
@@ -142,7 +120,7 @@ const {
         </div>
 
         <!-- Upload Progress -->
-        <div v-if="isUploading" class="mt-10 bg-gray-50 rounded-2xl p-6 border border-gray-200 space-y-4">
+        <div v-if="isUploading" class="col-span-2 mt-10 bg-gray-50 rounded-2xl p-6 border border-gray-200 space-y-4">
           <div class="flex justify-between items-center">
             <span class="text-sm font-semibold text-gray-700">
               Uploading course media
@@ -160,15 +138,5 @@ const {
         </div>
       </UForm>
     </UCard>
-
-    <!-- Course missing alert -->
-    <div v-if="!course?.data && !pending && !error">
-      <UAlert icon="i-heroicons-exclamation-triangle" color="warning" variant="soft" title="Warning!"
-        :description="`Course with ID ${courseId} is missing!`" :close-button="{
-          icon: 'i-heroicons-x-mark-20-solid',
-          color: 'orange',
-          variant: 'link',
-        }" />
-    </div>
   </div>
 </template>
