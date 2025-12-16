@@ -1,47 +1,127 @@
+<!-- app/pages/courses/[id]/index.vue -->
 <script setup lang="ts">
-import SingleCourseCard from "~/components/courses/SingleCourseCard.vue";
-
-const route = useRoute();
-
-const courseId = route.params.id;
 
 definePageMeta({
-  validate(route) {
-    return typeof route.params.id === "string" && /^\d+$/.test(route.params.id);
-  },
-});
-
-// Scanned composable from nuxt.config.ts "useCoursesShowCourse()" method
-const { course, pending, error, refetch } = useShowCourse(courseId);
-
-onMounted(() => {
-  refetch();
+  title: 'course Details'
 })
+
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
+
+// Get course ID from route
+const courseId = computed(() => route.params.id as string)
+
+// Initialize CRUD composable
+const crud = useCrud<Courses>(coursesResource)
+
+// Delete confirmation state
+const deleteModal = ref(false)
+
+// Fetch course data on mount
+onMounted(async () => {
+  await crud.fetchItem(courseId.value)
+})
+
+// Handle edit
+const handleEdit = () => {
+  router.push(`/courses/${courseId.value}/edit`)
+}
+
+// Handle delete
+const handleDelete = () => {
+  deleteModal.value = true
+}
+
+// Confirm delete
+const confirmDelete = async () => {
+  try {
+    await crud.deleteItem(courseId.value)
+    
+    toast.add({
+      title: 'Success',
+      description: 'course deleted successfully',
+      color: 'success'
+    })
+    
+    // Redirect to users list
+    router.push('/courses')
+  } catch (error) {
+    toast.add({
+      title: 'Error',
+      description: 'Failed to delete course',
+      color: 'error'
+    })
+    deleteModal.value = false
+  }
+}
+
+// Handle back
+const handleBack = () => {
+  router.push('/courses')
+}
 </script>
 
 <template>
-  <div>
-    <!-- pending -->
-    <div v-if="pending">
-      <UProgress :v-model="pending" />
+  <div class="space-y-6">
+    <!-- Header -->
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        course Details
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        View course information
+      </p>
     </div>
-    <!-- success -->
-    <div v-if="course?.data">
-      <SingleCourseCard :course="course?.data" />
-    </div>
-    <!-- error -->
-    <div v-if="error" class="bg-error-50">
-      {{ error.message }}
-      <div v-if="!course?.data">
-        <UAlert icon="i-heroicons-exclamation-triangle" color="warning" variant="soft" title="Warning!"
-          :description="`course with id ${courseId} is missing!`" :close-button="{
-            icon: 'i-heroicons-x-mark-20-solid',
-            color: 'orange',
-            variant: 'link',
-          }" />
-      </div>
-    </div>
+
+    <!-- Error Alert -->
+    <UAlert
+      v-if="crud.error.value"
+      color="error"
+      variant="soft"
+      :title="crud.error.value.message"
+    />
+
+    <!-- Detail Card -->
+    <CrudDetail
+      :config="coursesResource"
+      :item="crud.item.value"
+      :loading="crud.loading.value"
+      @edit="handleEdit"
+      @delete="handleDelete"
+      @back="handleBack"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <UModal v-model="deleteModal">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold">Confirm Delete</h3>
+        </template>
+
+        <p class="text-gray-600 dark:text-gray-400">
+          Are you sure you want to delete this course? This action cannot be undone.
+        </p>
+
+        <template #footer>
+          <div class="flex justify-end gap-3">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              @click="deleteModal = false"
+            >
+              Cancel
+            </UButton>
+            <UButton
+              color="error"
+              :loading="crud.loading.value"
+              @click="confirmDelete"
+            >
+              Delete
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
-
-<style scoped></style>

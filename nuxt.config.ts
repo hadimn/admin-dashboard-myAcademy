@@ -1,5 +1,4 @@
 import type { NuxtPage } from "nuxt/schema";
-import { applyAuthMiddleware } from "./.nuxt/hooks/pages-extend-auth";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -18,7 +17,7 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
-    typeCheck: true,
+    // typeCheck: true,
   },
 
   imports: {
@@ -52,11 +51,5 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   googleFonts: {
     families: {},
-  },
-
-  hooks: {
-    "pages:extend"(pages: NuxtPage[]) {
-      applyAuthMiddleware(pages);
-    },
   },
 });

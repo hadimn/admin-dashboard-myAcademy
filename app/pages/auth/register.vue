@@ -1,5 +1,9 @@
 <script setup lang="ts">
 
+definePageMeta({
+  layout: "default",
+});
+
 const isLoading = ref(false);
 const showPassword = ref(false);
 const showCPassword = ref(false);

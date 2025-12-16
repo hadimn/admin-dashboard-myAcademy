@@ -3,12 +3,13 @@
 export interface ResourceField {
   key: string
   label: string
-  type: 'text' | 'email' | 'number' | 'textarea' | 'select' | 'date' | 'checkbox' | 'file' | 'password'
+  type: 'file' | 'json' | 'text' | 'email' | 'number' | 'textarea' | 'select' | 'date' | 'checkbox' | 'file' | 'password' | 'datetime'
   required?: boolean
   options?: { label: string; value: any }[] // For select fields
   validation?: (value: any) => string | null
   showInTable?: boolean
-  showInForm?: boolean
+  showInFormEdit?: boolean
+  showInFormCreate?: boolean
   showInDetail?: boolean
   render?: (value: any, item?: any) => string // Custom rendering for table/detail
 }

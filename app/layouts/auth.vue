@@ -1,6 +1,4 @@
 <!-- layouts/auth.vue -->
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <slot />
-  </div>
+  <slot />
 </template>

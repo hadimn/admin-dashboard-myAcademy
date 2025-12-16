@@ -1,11 +1,9 @@
 <script setup lang="ts"></script>
 
 <template>
-  <footer>
-    <div>
-      component: footer
-    </div>
-  </footer>
+  <div>
+    Component: skeleton/SkeletonLoader
+  </div>
 </template>
 
 <style scoped></style>

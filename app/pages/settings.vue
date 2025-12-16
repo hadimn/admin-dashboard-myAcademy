@@ -33,17 +33,17 @@
         <div v-if="activeTab === 'general'">
           <h3 class="text-lg font-semibold text-gray-900 mb-6">General Settings</h3>
           <UForm :state="formState" class="space-y-6">
-            <UFormGroup label="Site Name" name="siteName">
+            <UFormField label="Site Name" name="siteName">
               <UInput v-model="formState.siteName" />
-            </UFormGroup>
+            </UFormField>
             
-            <UFormGroup label="Site Description" name="siteDescription">
+            <UFormField label="Site Description" name="siteDescription">
               <UTextarea v-model="formState.siteDescription" />
-            </UFormGroup>
+            </UFormField>
             
-            <UFormGroup label="Timezone" name="timezone">
+            <UFormField label="Timezone" name="timezone">
               <USelect v-model="formState.timezone" :options="timezones" />
-            </UFormGroup>
+            </UFormField>
             
             <div class="flex justify-end">
               <UButton type="submit" label="Save Changes" />

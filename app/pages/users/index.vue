@@ -17,7 +17,7 @@ const searchTimeout = ref<NodeJS.Timeout>()
 
 // Delete confirmation state
 const deleteModal = ref(false)
-const itemToDelete = ref<number | null>(null)
+const itemToDelete = ref<User | null>(null)
 
 // Fetch items on mount
 onMounted(() => {
@@ -51,8 +51,8 @@ const handleEdit = (id: string | number) => {
 }
 
 // Handle delete
-const handleDelete = (id: string | number) => {
-  itemToDelete.value = Number(id)
+const handleDelete = (user: User) => {
+  itemToDelete.value = user
   deleteModal.value = true
 }
 
@@ -61,7 +61,7 @@ const confirmDelete = async () => {
   if (itemToDelete.value === null) return
   
   try {
-    await crud.deleteItem(itemToDelete.value)
+    await crud.deleteItem(itemToDelete.value.id)
     deleteModal.value = false
     itemToDelete.value = null
     
@@ -83,6 +83,12 @@ const confirmDelete = async () => {
       color: 'error'
     })
   }
+}
+
+// Cancel delete
+const cancelDelete = () => {
+  deleteModal.value = false
+  itemToDelete.value = null
 }
 </script>
 
@@ -134,40 +140,49 @@ const confirmDelete = async () => {
       :pagination="crud.pagination.value"
       @view="handleView"
       @edit="handleEdit"
-      @delete="handleDelete"
+      @delete-item="handleDelete"
       @page-change="handlePageChange"
     />
 
     <!-- Delete Confirmation Modal -->
-    <UModal v-model="deleteModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold">Confirm Delete</h3>
-        </template>
-
-        <p class="text-gray-600 dark:text-gray-400">
-          Are you sure you want to delete this user? This action cannot be undone.
-        </p>
-
-        <template #footer>
-          <div class="flex justify-end gap-3">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              @click="deleteModal = false"
-            >
-              Cancel
-            </UButton>
-            <UButton
-              color="error"
-              :loading="crud.loading.value"
-              @click="confirmDelete"
-            >
-              Delete
-            </UButton>
+    <UModal 
+      v-model:open="deleteModal"
+      title="Confirm Delete"
+      description="This action cannot be undone and will permanently remove the user from the system."
+      :ui="{ footer: 'justify-end' }"
+    >
+      <template #body>
+        <div class="space-y-3">
+          <p class="text-gray-900 dark:text-gray-100">
+            Are you sure you want to delete this user?
+          </p>
+          <div v-if="itemToDelete" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {{ itemToDelete.name || 'User' }}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ itemToDelete.email }}
+            </p>
           </div>
-        </template>
-      </UCard>
+        </div>
+      </template>
+
+      <template #footer>
+        <UButton
+          color="neutral"
+          variant="outline"
+          @click="cancelDelete"
+        >
+          Cancel
+        </UButton>
+        <UButton
+          color="error"
+          :loading="crud.loading.value"
+          @click="confirmDelete"
+        >
+          Delete User
+        </UButton>
+      </template>
     </UModal>
   </div>
 </template>

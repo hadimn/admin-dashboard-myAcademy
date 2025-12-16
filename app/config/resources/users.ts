@@ -30,7 +30,8 @@ export const usersResource: ResourceConfig<User> = {
       label: "ID",
       type: "number",
       showInTable: true,
-      showInForm: false,
+      showInFormCreate: false,
+      showInFormEdit:false,
       showInDetail: true,
     },
     {
@@ -39,7 +40,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "text",
       required: true,
       showInTable: true,
-      showInForm: true,
+      showInFormEdit:true,
+      showInFormCreate:true,
       showInDetail: true,
       validation: (value) => {
         if (value && value.length < 3) {
@@ -54,7 +56,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "email",
       required: false,
       showInTable: true,
-      showInForm: false,
+      showInFormEdit:false,
+      showInFormCreate:true,
       showInDetail: true,
       validation: (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,7 +73,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "password",
       required: false,
       showInTable: false,
-      showInForm: true,
+      showInFormCreate: true,
+      showInFormEdit: false,
       showInDetail: false,
     },
     {
@@ -79,7 +83,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "password",
       required: false,
       showInTable: false,
-      showInForm: true,
+      showInFormCreate: true,
+      showInFormEdit: false,
       showInDetail: false,
     },
     {
@@ -87,7 +92,8 @@ export const usersResource: ResourceConfig<User> = {
       label: "Created At",
       type: "date",
       showInTable: true,
-      showInForm: false,
+      showInFormCreate: false,
+      showInFormEdit: false,
       showInDetail: true,
       render: (value) => {
         return value ? new Date(value).toLocaleString() : "-";
@@ -99,18 +105,9 @@ export const usersResource: ResourceConfig<User> = {
       type: "text", // Assuming this is a unique, system-generated identifier
       required: false, // Often optional/nullable in the database
       showInTable: false,
-      showInForm: false,
-      showInDetail: true,
-      validation: (value) => {
-        if (value && typeof value !== "string") {
-          return "Remember token must be a string.";
-        }
-        // Optional: If you know the exact expected format (e.g., UUID, specific hash length)
-        // if (value && !/^[A-Za-z0-9]{60}$/.test(value)) {
-        //   return "Remember token is in an invalid format.";
-        // }
-        return null;
-      },
+      showInFormCreate: false,
+      showInFormEdit: false,
+      showInDetail: false,
     },
     {
       key: "current_streak",
@@ -118,7 +115,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "number",
       required: true,
       showInTable: true,
-      showInForm: true,
+      showInFormCreate: true,
+      showInFormEdit: true,
       showInDetail: true,
       validation: (value) => {
         // Check if a value is provided and is a valid number
@@ -141,7 +139,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "number",
       required: true,
       showInTable: true,
-      showInForm: true,
+      showInFormCreate: true,
+      showInFormEdit: true,
       showInDetail: true,
       validation: (value) => {
         // Check if a value is provided and is a valid number
@@ -166,7 +165,8 @@ export const usersResource: ResourceConfig<User> = {
       type: "date", // Stored as a string, but represents a date
       required: true,
       showInTable: true,
-      showInForm: true,
+      showInFormCreate: true,
+      showInFormEdit: true,
       showInDetail: true,
       validation: (value) => {
         if (!value) {
@@ -199,35 +199,9 @@ export const usersResource: ResourceConfig<User> = {
       type: "text", // Used for push notifications (FCM/APNS)
       required: false, // Usually optional
       showInTable: false,
-      showInForm: false,
-      showInDetail: true,
-      validation: (value) => {
-        if (value && typeof value !== "string") {
-          return "Device token must be a string.";
-        }
-        // Device tokens (FCM/APNS) have specific formats, but they are often very long strings.
-        // Basic length check can prevent accidental short values.
-        if (value && value.length < 10) {
-          return "Device token seems too short to be valid.";
-        }
-        return null;
-      },
+      showInFormCreate: false,
+      showInFormEdit: false,
+      showInDetail: false,
     },
-    // {
-    //   key: "status",
-    //   label: "Status",
-    //   type: "select",
-    //   required: true,
-    //   showInTable: true,
-    //   showInForm: true,
-    //   showInDetail: true,
-    //   options: [
-    //     { label: "Active", value: "active" },
-    //     { label: "Inactive", value: "inactive" },
-    //   ],
-    //   render: (value) => {
-    //     return value === "active" ? "🟢 Active" : "🔴 Inactive";
-    //   },
-    // },
   ],
 };

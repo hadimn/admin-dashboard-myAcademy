@@ -5,18 +5,16 @@ useHead({
   },
 });
 
-const toaster = {position:'top-right'} as const;
+const toaster = { position: 'top-right' } as const;
 </script>
 
 <template>
-  <div>
+  <UApp :toaster="toaster" class="min-h-screen bg-gray-300">
     <NuxtLoadingIndicator />
-    <UApp :toaster="toaster">
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UApp>
-  </div>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </UApp>
 </template>
 
 <style>

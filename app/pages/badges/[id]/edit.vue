@@ -1,39 +1,39 @@
-<!-- app/pages/users/[id]/edit.vue -->
+<!-- app/pages/badges/[id]/edit.vue -->
 <script setup lang="ts">
-import { usersResource, type User } from '~/config/resources/users'
+import { badgesResource, type Badges } from '~/config/resources/badges'
 
 definePageMeta({
-  title: 'Edit User'
+  title: 'Edit badge'
 })
 
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-// Get user ID from route
-const userId = computed(() => route.params.id as string)
+// Get badge ID from route
+const badgeId = computed(() => route.params.id as string)
 
 // Initialize CRUD composable
-const crud = useCrud<User>(usersResource)
+const crud = useCrud<Badges>(badgesResource)
 
 // Fetch user data on mount
 onMounted(async () => {
-  await crud.fetchItem(userId.value)
+  await crud.fetchItem(badgeId.value)
 })
 
 // Handle form submission
-const handleSubmit = async (data: Partial<User>) => {
+const handleSubmit = async (data: Partial<Badges>) => {
   try {
-    await crud.updateItem(userId.value, data)
+    await crud.updateItem(badgeId.value, data)
 
     toast.add({
       title: 'Success',
-      description: 'User updated successfully',
+      description: 'badge updated successfully',
       class: 'text-green-600'
     })
 
-    // Redirect to user detail page
-    router.push(`/users/${userId.value}`)
+    // Redirect to badge detail page
+    router.push(`/badges/${badgeId.value}`)
   } catch (err: any) {
     let errorMessage = 'An unknown error occurred.';
 
@@ -63,13 +63,13 @@ const handleSubmit = async (data: Partial<User>) => {
       // class: 'text-red-600' // 'class' is often used for styling the toast container, not the text itself. Use 'color' prop if available.
     })
 
-    console.error('Failed to update user:', err)
+    console.error('Failed to update badge:', err)
   }
 }
 
 // Handle cancel
 const handleCancel = () => {
-  router.push(`/users/${userId.value}`)
+  router.push(`/badges/${badgeId.value}`)
 }
 </script>
 
@@ -78,13 +78,13 @@ const handleCancel = () => {
     <!-- Header -->
     <div>
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        Edit User
+        Edit badge
         <div v-if="crud.item.value" class="mt-1 text-lg font-medium text-gray-500 dark:text-gray-400">
-          {{ crud.item.value.email }}
+          {{ crud.item.value.name }}
         </div>
       </h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Update user information
+        Update badge information
       </p>
     </div>
 
@@ -94,7 +94,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm v-else-if="crud.item.value" :config="usersResource" :initial-data="crud.item.value"
+    <CrudForm v-else-if="crud.item.value" :config="badgesResource" :initial-data="crud.item.value"
       :loading="crud.loading.value" :error="crud.error.value" mode="edit" @submit="handleSubmit"
       @cancel="handleCancel" />
 
