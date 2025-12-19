@@ -20,7 +20,7 @@ const showSidebar = ref(false);
     @close="showSidebar = false"
     @logout="logout" 
   />
-  <div class="min-h-screen lg:pl-72 bg-gray-50">
+  <div class="min-h-screen lg:pl-72 bg-default">
     <AdminNavbar @toggle-sidebar="showSidebar = !showSidebar" />
     <main class="py-5">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -29,3 +29,6 @@ const showSidebar = ref(false);
     </main>
   </div>
 </template>
+
+<style scoped>
+</style>

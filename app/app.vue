@@ -1,4 +1,19 @@
 <script lang="ts" setup>
+import type { RefSymbol } from '@vue/reactivity';
+
+
+const { locale, locales } = useI18n();
+
+// Compute the direction based on current locale
+const dir = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'));
+
+// Update the dir attribute on the <html> tag
+useHead({
+  htmlAttrs: {
+    dir: dir,
+  },
+});
+
 useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - admin dashboard` : "admin dashboard";

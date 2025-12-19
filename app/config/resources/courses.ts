@@ -40,16 +40,18 @@ export const coursesResource: ResourceConfig<Courses> = {
       showInFormEdit: true,
       showInFormCreate: true,
       showInDetail: true,
+      fileType: "image",
     },
     {
       key: "video_url",
       label: "Video URL",
       type: "file",
       required: false,
-      showInTable: false,
+      showInTable: true,
       showInFormEdit: true,
       showInFormCreate: true,
       showInDetail: true,
+      fileType:"video",
     },
     {
       key: "title",
@@ -86,7 +88,13 @@ export const coursesResource: ResourceConfig<Courses> = {
     {
       key: "language",
       label: "Language",
-      type: "text",
+      type: "select",
+      options: [
+        { label: "English", value: "en" },
+        { label: "Spanish", value: "es" },
+        { label: "French", value: "fr" },
+        { label: "Arabic", value: "ar" },
+      ],
       required: true,
       showInTable: true,
       showInFormEdit: true,
@@ -103,14 +111,14 @@ export const coursesResource: ResourceConfig<Courses> = {
       key: "order",
       label: "Order",
       type: "number",
-      required: true,
+      required: false,
       showInTable: true,
       showInFormEdit: true,
       showInFormCreate: true,
       showInDetail: true,
       validation: (value) => {
-        if (value && value < 1) {
-          return "Order must be at least 1";
+        if (value && value < 0) {
+          return "Order must be at least 0";
         }
         return null;
       },

@@ -1,11 +1,22 @@
-import type { NuxtPage } from "nuxt/schema";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ["@nuxtjs/google-fonts", "@nuxt/ui", "@nuxt/icon"],
+  modules: ["@nuxtjs/google-fonts", "@nuxt/ui", "@nuxt/icon", "@nuxtjs/i18n"],
+
+  i18n: {
+    locales: [
+      { code: "en", name: "English" , file: "en.json", dir:"ltr"},
+      { code: "ar", name: "Arabic", file: "ar.json", dir: "rtl" },
+    ],
+    defaultLocale: "en",
+    strategy: "no_prefix",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "i18n_redirected",
+    },
+  },
 
   runtimeConfig: {
     coingeckoApiKey: "CG-FHNYSHhxaAGHFaAvoc2QNrFW",
@@ -42,9 +53,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: "en",
       },
-      link: [
-        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" }
-      ],
+      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
     },
   },
   ui: {},

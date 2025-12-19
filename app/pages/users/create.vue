@@ -51,6 +51,7 @@ const handleCancel = () => {
 
     <!-- Form -->
     <CrudForm
+      :data-loading="false"
       :config="usersResource"
       :loading="crud.loading.value"
       :error="crud.error.value"

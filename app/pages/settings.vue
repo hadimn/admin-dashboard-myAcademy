@@ -2,8 +2,8 @@
 <template>
   <div>
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
-      <p class="mt-2 text-gray-600">Manage your account settings and preferences</p>
+      <h1 class="text-3xl font-bold text-highlighted">Settings</h1>
+      <p class="mt-2 text-muted">Manage your account settings and preferences</p>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">
@@ -18,7 +18,7 @@
             variant="ghost"
             class="w-full justify-start"
             :class="[
-              activeTab === item.id ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-50'
+              activeTab === item.id ? 'bg-primary/10 text-primary' : 'text-default hover:bg-muted'
             ]"
             @click="activeTab = item.id"
           >
@@ -31,29 +31,20 @@
       <!-- Settings Content -->
       <UCard class="lg:col-span-2">
         <div v-if="activeTab === 'general'">
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">General Settings</h3>
-          <UForm :state="formState" class="space-y-6">
-            <UFormField label="Site Name" name="siteName">
-              <UInput v-model="formState.siteName" />
-            </UFormField>
-            
-            <UFormField label="Site Description" name="siteDescription">
-              <UTextarea v-model="formState.siteDescription" />
-            </UFormField>
-            
-            <UFormField label="Timezone" name="timezone">
-              <USelect v-model="formState.timezone" :options="timezones" />
-            </UFormField>
-            
-            <div class="flex justify-end">
-              <UButton type="submit" label="Save Changes" />
-            </div>
-          </UForm>
+          <h3 class="text-lg font-semibold text-highlighted mb-6">General Settings</h3>
         </div>
 
         <div v-else-if="activeTab === 'security'">
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">Security Settings</h3>
+          <h3 class="text-lg font-semibold text-highlighted mb-6">Security Settings</h3>
           <!-- Security settings content -->
+        </div>
+        <div v-else-if="activeTab === 'notifications'">
+          <h3 class="text-lg font-semibold text-highlighted mb-6">Notification Settings</h3>
+          <!-- Notification settings content -->
+        </div>
+        <div v-else-if="activeTab === 'integrations'">
+          <h3 class="text-lg font-semibold text-highlighted mb-6">Integration Settings</h3>
+           <!-- Integration settings content -->
         </div>
       </UCard>
     </div>

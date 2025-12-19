@@ -60,6 +60,7 @@ const handleCancel = () => {
       :config="badgesResource"
       :loading="crud.loading.value"
       :error="crud.error.value"
+      :data-loading="false"
       mode="create"
       @submit="handleSubmit"
       @cancel="handleCancel"

@@ -5,11 +5,17 @@ const route = useRoute();
 
 const navigation = [
   { name: "Dashboard", to: "/", icon: "i-heroicons-home" },
-  { name: "courses", to: "/courses", icon: "i-hugeicons-course" },
-  { name: "badges", to: "/badges", icon: "i-simple-line-icons-badge" },
+  { name: "Users", to: "/users", icon: "i-heroicons-users", key: 'users' },
+  { name: "User Progress", to: "/userProgress", icon: "i-hugeicons-progress", key: 'user_progress' },
+  { name: "courses", to: "/courses", icon: "i-heroicons-academic-cap", key: 'courses' },
+  { name: "Course Pricing", to: "/coursePricing", icon: "i-heroicons-currency-dollar", key: 'course_pricing' },
+  { name: "sections", to: "/sections", icon: "i-heroicons-squares-2x2", key: 'sections' },
+  { name: "units", to: "/units", icon: "i-heroicons-cube", key: 'units' },
+  { name: "lessons", to: "/lessons", icon: "i-heroicons-book-open", key: 'lessons' },
+  { name: "questions", to: "/questions", icon: "i-healthicons-i-exam-multiple-choice-outline", key: 'questions' },
+  { name: "answeredQuestions", to: "/answeredQuestions", icon: "i-heroicons-chat-bubble-left-right", key: 'answered_questions' },
+  { name: "badges", to: "/badges", icon: "i-simple-line-icons-badge", key: 'badges' },
   { name: "Analytics", to: "/analytics", icon: "i-heroicons-chart-bar" },
-  { name: "Users", to: "/users", icon: "i-heroicons-users", badge: "24" },
-  { name: "Settings", to: "/settings", icon: "i-heroicons-cog-6-tooth" },
 ];
 
 const props = defineProps<{
@@ -29,8 +35,12 @@ const userMenuItems = [
     {
       label: "Profile",
       icon: "i-heroicons-user",
-      onSelect: () => {
-        console.log("Profile clicked");
+      onSelect: async () => {
+        try {
+          await navigateTo("/admin/profile");
+        } catch (error) {
+          console.error("Navigation to settings failed:", error);
+        }
       },
     },
     {
@@ -55,14 +65,29 @@ const userMenuItems = [
     },
   ],
 ];
+
+watch(
+  () => route.fullPath,
+  () => {
+    emit('close')
+  }
+)
+
+const { counts, fetchCounts, loading: countsLoading } = useDashboardCounts()
+
+onMounted(() => {
+  fetchCounts()
+})
+
+
 </script>
 
 <template>
-  <!-- Fixed: Remove ClientOnly and use v-show for overlay to avoid hydration issues -->
-  <div v-show="props.isOpen" class="fixed inset-0 z-40 bg-gray-600/50 lg:hidden" @click="emit('close')" />
+  <!-- Overlay for mobile -->
+  <div v-show="props.isOpen" class="fixed inset-0 z-40 bg-inverted/50 lg:hidden" @click="emit('close')" />
 
   <aside
-    class="fixed inset-y-0 left-0 z-50 w-72 flex-col border-r border-gray-200 bg-white transition-transform duration-200 lg:flex"
+    class="fixed inset-y-0 left-0 z-50 w-72 flex flex-col border-r border-default bg-elevated transition-transform duration-200 lg:translate-x-0"
     :class="[
       'lg:translate-x-0',
       'transform',
@@ -70,34 +95,36 @@ const userMenuItems = [
     ]">
 
     <!-- Logo -->
-    <div class="flex h-16 items-center border-b border-gray-200 px-6">
+    <div class="flex h-16 items-center border-b border-default px-6 bg-accented">
       <!-- Close button for mobile -->
       <UButton icon="i-heroicons-x-mark" color="neutral" variant="ghost" class="lg:hidden" @click="emit('close')" />
 
       <div class="flex items-center gap-3">
-        <UIcon name="i-heroicons-chart-bar" class="h-8 w-8 text-primary-600" />
-        <span class="text-xl font-bold text-gray-900">AdminDash</span>
+        <UIcon name="i-heroicons-chart-bar" class="h-8 w-8 text-primary" />
+        <span class="text-xl font-bold text-highlighted">
+          <h1>{{ $t("logoName") }}</h1>
+        </span>
       </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 space-y-1 p-4">
+    <nav class="flex-1 overflow-y-auto overflow-x-hidden space-y-1 p-4">
       <UButton v-for="item in navigation" :key="item.name" :to="item.to" color="neutral" variant="ghost"
         class="w-full justify-start" :class="[
           route.path === item.to
-            ? 'bg-primary-50 text-primary-700'
-            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900',
+            ? 'bg-primary/10 text-primary'
+            : 'text-default hover:bg-muted hover:text-highlighted',
         ]">
         <UIcon :name="item.icon" class="h-5 w-5" />
         {{ item.name }}
-        <UBadge v-if="item.badge" size="xs" color="primary" class="ml-auto">
-          {{ item.badge }}
+        <UBadge v-if="item.key && counts[item.key] !== undefined" size="xs" color="primary" class="ml-auto">
+          {{ counts[item.key] }}
         </UBadge>
       </UButton>
     </nav>
 
     <!-- User Profile -->
-    <div class="border-t border-gray-200 p-4">
+    <div class="border-t border-default p-4 bg-accented">
       <div class="flex items-center gap-3">
         <ClientOnly>
           <UAvatar :src="`https://api.dicebear.com/7.x/avataaars/svg?seed=${admin?.name || 'Admin'}`"
@@ -106,8 +133,8 @@ const userMenuItems = [
         <div class="flex-1">
           <ClientOnly>
             <div>
-              <p class="text-sm font-medium text-gray-900">{{ admin?.name || 'Admin User' }}</p>
-              <p class="text-xs text-gray-500">{{ admin?.email || 'admin@example.com' }}</p>
+              <p class="text-sm font-medium text-highlighted">{{ admin?.name || 'Admin User' }}</p>
+              <p class="text-xs text-muted">{{ admin?.email || 'admin@example.com' }}</p>
             </div>
           </ClientOnly>
         </div>

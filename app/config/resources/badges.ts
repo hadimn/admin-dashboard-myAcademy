@@ -34,12 +34,12 @@ export const badgesResource: ResourceConfig<Badges> = {
       key: "icon",
       label: "Icon URL",
       type: "file",
-      render: (value) => value ? `<img src="${value}" class="w-10 h-10 rounded-full object-cover" />` : '-',
       required: false,
       showInTable: true,
       showInFormEdit: true,
       showInFormCreate: true,
       showInDetail: true,
+      fileType: "image",
     },
     {
       key: "name",

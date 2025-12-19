@@ -63,16 +63,17 @@ const handleLogin = async () => {
       <UCard>
         <template #header>
           <div class="text-center">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 class="flex just-center items-center flex-col text-2xl font-bold text-highlighted dark:text-white">
+              <ColorModeButton />
               Admin Login
             </h1>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p class="mt-2 text-sm text-muted dark:text-gray-400">
               Sign in to access the admin dashboard
             </p>
           </div>
         </template>
 
-        <UForm @submit.prevent="handleLogin" class="space-y-4">
+        <UForm @submit.prevent="handleLogin" class="flex justify-center items-center flex-col space-y-4">
           <!-- API Error Message -->
           <UAlert v-if="error" color="error" variant="soft" :title="error" :close-button="{
             icon: 'i-heroicons-x-mark-20-solid',

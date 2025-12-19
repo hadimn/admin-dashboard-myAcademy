@@ -1,7 +1,6 @@
-
 <script setup lang="ts">
 definePageMeta({
-  layout:'default',
+  layout: 'default',
 })
 
 import { useDashboardStats, type StatItem } from '~/composables/useDashboardStats'
@@ -39,43 +38,33 @@ const productColumns = [
 ]
 </script>
 
-<!-- pages/index.vue -->
 <template>
-  <div>
+  <div class="p-6">
     <!-- Page Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-      <p class="mt-2 text-gray-600">Welcome back! Here's what's happening with your store today.</p>
+      <h1 class="text-3xl font-bold text-highlighted">Dashboard</h1>
+      <p class="mt-2 text-muted">Welcome back! Here's what's happening with your store today.</p>
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <DashboardStatCard
-        v-for="stat in stats"
-        :key="stat.id"
-        :stat="stat"
-      />
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <DashboardStatCard v-for="stat in stats" :key="stat.id" :stat="stat" />
     </div>
 
     <!-- Charts & Tables -->
-    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+    <div class="grid gap-6 lg:grid-cols-2">
       <!-- Revenue Chart -->
-      <UCard class="col-span-2">
+      <UCard class="lg:col-span-2">
         <template #header>
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">Revenue Overview</h3>
-            <USelect
-              v-model="selectedPeriod"
-              :options="periodOptions"
-              color="neutral"
-              size="sm"
-            />
+            <h3 class="text-lg font-semibold text-highlighted">Revenue Overview</h3>
+            <USelect v-model="selectedPeriod" :options="periodOptions" color="neutral" size="sm" />
           </div>
         </template>
         <div class="h-80">
           <!-- Chart would go here -->
-          <div class="flex h-full items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
-            <p class="text-gray-500">Chart Component Placeholder</p>
+          <div class="flex h-full items-center justify-center border-2 border-dashed border-default rounded-lg">
+            <p class="text-muted">Chart Component Placeholder</p>
           </div>
         </div>
       </UCard>
@@ -83,7 +72,7 @@ const productColumns = [
       <!-- Recent Orders -->
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
+          <h3 class="text-lg font-semibold text-highlighted">Recent Orders</h3>
         </template>
         <UTable :rows="recentOrders" :columns="orderColumns" />
       </UCard>
@@ -91,7 +80,7 @@ const productColumns = [
       <!-- Top Products -->
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold text-gray-900">Top Products</h3>
+          <h3 class="text-lg font-semibold text-highlighted">Top Products</h3>
         </template>
         <UTable :rows="topProducts" :columns="productColumns" />
       </UCard>

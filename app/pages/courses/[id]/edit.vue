@@ -1,174 +1,104 @@
+<!-- app/pages/courses/[id]/edit.vue -->
 <script setup lang="ts">
+definePageMeta({
+  title: "Edit course",
+});
 
-// Import composable functions
-const {
-  // State
-  course,
-  pending,
-  error,
-  uploadError,
-  isUploading,
-  uploadProgress,
-  state,
-  imageFile,
-  videoFile,
-  
-  // Methods
-  onImageFileChange,
-  onVideoFileChange,
-  formSubmit,
-  onError,
-  validate,
-  formatFileSize,
-  
-  // Constants
-  languages,
-  courseId
-} = useEditCourse();
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+
+// Get course ID from route
+const courseId = computed(() => route.params.id as string);
+
+// Initialize CRUD composable
+const crud = useCrud<Courses>(coursesResource);
+
+// Fetch user data on mount
+onMounted(async () => {
+  await crud.fetchItem(courseId.value);
+});
+
+// Handle form submission
+const handleSubmit = async (data: Partial<Courses>) => {
+  try {
+    await crud.updateItem(courseId.value, data);
+
+    toast.add({
+      title: "Success",
+      description: "course updated successfully",
+      class: "text-green-600",
+    });
+
+    // Redirect to course detail page
+    router.push(`/courses/${courseId.value}`);
+  } catch (err: any) {
+    let errorMessage = "An unknown error occurred.";
+
+    // 1. Check if the error object has an 'errors' property
+    //    and that it is an object (like { fieldName: ['error1', 'error2'] })
+    if (err.errors && typeof err.errors === "object") {
+      // 2. Extract all error message arrays into a single, flat array
+      const allErrors = Object.values(err.errors).flat();
+
+      // 3. Join the errors using a newline character (\n) as the separator
+      if (allErrors.length > 0) {
+        errorMessage = allErrors.join("\n");
+      } else if (err.message) {
+        // Fallback to the main error message if 'errors' is empty
+        errorMessage = err.message;
+      }
+    } else if (err.message) {
+      // Fallback to the main error message if 'errors' doesn't exist
+      errorMessage = err.message;
+    }
+
+    toast.add({
+      title: "Error",
+      // Pass the concatenated string to the description
+      description: errorMessage,
+      color: "error", // Use a standard color name like 'danger' or 'red' if supported
+      // class: 'text-red-600' // 'class' is often used for styling the toast container, not the text itself. Use 'color' prop if available.
+    });
+
+    console.error("Failed to update course:", err);
+  }
+};
+
+// Handle cancel
+const handleCancel = () => {
+  router.push(`/courses/${courseId.value}`);
+};
 </script>
 
 <template>
-  <div>
-    <!-- Loading / Error -->
-    <div v-if="pending" class="mb-4">
-      <UProgress :value="50" />
-    </div>
-
-    <div v-if="error" class="mb-4 bg-error-50 p-4 rounded">
-      {{ error.message }}
-    </div>
-
-    <!-- Upload Error -->
-    <div v-if="uploadError" class="mb-4 bg-error-50 p-4 rounded">
-      Upload Error: {{ uploadError }}
+  <div class="space-y-6">
+    <!-- Header -->
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        Edit course
+        <div
+          v-if="crud.item.value"
+          class="mt-1 text-lg font-medium text-gray-500 dark:text-gray-400"
+        >
+          {{ crud.item.value.title }}
+        </div>
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Update course information
+      </p>
     </div>
 
     <!-- Form -->
-    <UCard v-if="course?.data">
-      <UForm :validate="validate" :state="state" class="grid grid-cols-2 m-2 gap-3" @submit="formSubmit"
-        @error="onError">
-        <!-- Header -->
-        <div class="flex items-center justify-between border-b pb-3 col-span-2">
-          <div>
-            <h2 class="text-xl font-bold text-gray-900">
-              <NuxtLink style="color: blue;" to="/courses">Courses</NuxtLink> / <NuxtLink style="color: blue;" :to="`/courses/${courseId}`">ID: {{ courseId }}</NuxtLink> / Edit
-            </h2>
-          </div>
-        </div>
-
-        <!-- Title -->
-        <UFormField label="Title" name="title" required class=" lg:col-span-2">
-          <UInput v-model="state.title" placeholder="Enter course title"
-            class="w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
-        </UFormField>
-
-        <!-- Description -->
-        <UFormField label="Description" name="description" required class="lg:col-span-2">
-          <UTextarea v-model="state.description" :rows="2" :maxrows="2" placeholder="Write a short course description"
-            class="w-full rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
-        </UFormField>
-
-        <!-- Video Upload -->
-        <UFormField label="Video File">
-          <div
-            class="relative group border-2 border-dashed rounded-2xl p-5 text-center transition-all hover:border-primary hover:bg-primary/5">
-            <UInput type="file" @change="onVideoFileChange" accept="video/*" :disabled="isUploading"
-              class="absolute inset-0 opacity-0 cursor-pointer" />
-
-            <div class="space-y-2">
-              <UIcon name="i-heroicons-video-camera" class="w-8 h-8 mx-auto text-gray-400 group-hover:text-primary" />
-
-              <p class="text-sm text-gray-600">
-                Drop your video or
-                <span class="text-primary font-semibold">browse</span>
-              </p>
-
-              <p v-if="videoFile" class="text-xs text-gray-500 mt-2">
-                {{ videoFile.name }} ({{ formatFileSize(videoFile.size) }})
-              </p>
-            </div>
-          </div>
-        </UFormField>
-
-        <!-- Image Upload -->
-        <UFormField label="Image File">
-          <div
-            class="relative group border-2 border-dashed rounded-2xl p-5 text-center transition-all hover:border-primary hover:bg-primary/5">
-            <UInput type="file" @change="onImageFileChange" accept="image/*" :disabled="isUploading"
-              class="absolute inset-0 opacity-0 cursor-pointer" />
-
-            <div class="space-y-2">
-              <UIcon name="i-heroicons-photo" class="w-8 h-8 mx-auto text-gray-400 group-hover:text-primary" />
-
-              <p class="text-sm text-gray-600">
-                Drop your image or
-                <span class="text-primary font-semibold">browse</span>
-              </p>
-
-              <p v-if="imageFile" class="text-xs text-gray-500 mt-2">
-                {{ imageFile.name }} ({{ formatFileSize(imageFile.size) }})
-              </p>
-            </div>
-          </div>
-        </UFormField>
-
-        <!-- Language -->
-        <UFormField label="Language" name="language" required>
-          <USelect v-model="state.language" :items="languages" placeholder="Select language" :disabled="isUploading"
-            class="rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
-        </UFormField>
-
-        <!-- Order -->
-        <UFormField label="Display Order" name="order">
-          <UInput v-model="state.order" type="number" min="0" placeholder="0" :disabled="isUploading"
-            class="rounded-xl shadow-sm focus:ring-2 focus:ring-primary/30" />
-        </UFormField>
-
-        <div class="col-span-2 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
-          <!-- cancel button -->
-          <UButton :to="`/courses/${courseId}`" color="error" size="md" :disabled="isUploading"
-            class="w-full sm:w-auto px-6 sm:px-10 py-2.5 rounded-2xl shadow-lg hover:shadow-xl transition-all">
-            Cancel
-          </UButton>
-          <!-- submit button -->
-          <UButton type="submit" color="primary" size="md" :loading="isUploading" :disabled="isUploading"
-            class="w-full sm:w-auto px-6 sm:px-10 py-2.5 rounded-2xl shadow-lg hover:shadow-xl transition-all">
-            <template #leading v-if="isUploading">
-              <UIcon name="i-heroicons-arrow-path-20-solid" class="w-5 h-5 animate-spin" />
-            </template>
-
-            {{ isUploading ? "Uploading..." : "Save Changes" }}
-          </UButton>
-        </div>
-
-        <!-- Upload Progress -->
-        <div v-if="isUploading" class="mt-10 bg-gray-50 rounded-2xl p-6 border border-gray-200 space-y-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-semibold text-gray-700">
-              Uploading course media
-            </span>
-            <span class="text-sm font-medium text-primary">
-              {{ uploadProgress }}%
-            </span>
-          </div>
-
-          <UProgress :value="uploadProgress" :max="100" class="h-3 rounded-full" />
-
-          <p class="text-center text-xs text-gray-500">
-            Please don't close this page while uploading
-          </p>
-        </div>
-      </UForm>
-    </UCard>
-
-    <!-- Course missing alert -->
-    <div v-if="!course?.data && !pending && !error">
-      <UAlert icon="i-heroicons-exclamation-triangle" color="warning" variant="soft" title="Warning!"
-        :description="`Course with ID ${courseId} is missing!`" :close-button="{
-          icon: 'i-heroicons-x-mark-20-solid',
-          color: 'orange',
-          variant: 'link',
-        }" />
-    </div>
+    <CrudForm
+      :config="coursesResource"
+      :initial-data="crud.item.value || undefined"
+      :data-loading="crud.loading.value && !crud.item.value"
+      :loading="crud.loading.value"
+      :error="crud.error.value"
+      mode="edit"
+      @submit="handleSubmit"
+      @cancel="handleCancel"
+    />
   </div>
 </template>

@@ -2,8 +2,8 @@
 <template>
   <div>
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
-      <p class="mt-2 text-gray-600">Detailed analytics and insights</p>
+      <h1 class="text-3xl font-bold text-highlighted">Analytics</h1>
+      <p class="mt-2 text-muted">Detailed analytics and insights</p>
     </div>
 
     <div class="grid gap-6">
@@ -21,12 +21,12 @@
       <div class="grid gap-6 lg:grid-cols-2">
         <UCard v-for="chart in charts" :key="chart.id">
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900">{{ chart.title }}</h3>
+            <h3 class="text-lg font-semibold text-highlighted">{{ chart.title }}</h3>
           </template>
           <div class="h-64">
             <!-- Chart placeholder -->
-            <div class="flex h-full items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
-              <p class="text-gray-500">{{ chart.title }} Chart</p>
+            <div class="flex h-full items-center justify-center border-2 border-dashed border-default rounded-lg">
+              <p class="text-muted">{{ chart.title }} Chart</p>
             </div>
           </div>
         </UCard>

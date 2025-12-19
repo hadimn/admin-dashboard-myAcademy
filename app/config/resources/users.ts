@@ -21,6 +21,7 @@ export const usersResource: ResourceConfig<User> = {
   name: "users",
   singularName: "user",
   endpoint: "users",
+  idField: "id",
   searchable: true,
   sortable: true,
   perPage: 15,

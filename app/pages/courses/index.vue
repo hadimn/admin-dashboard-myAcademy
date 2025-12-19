@@ -179,7 +179,7 @@ const cancelDelete = () => {
           :loading="crud.loading.value"
           @click="confirmDelete"
         >
-          Delete badge
+          Delete course
         </UButton>
       </template>
     </UModal>

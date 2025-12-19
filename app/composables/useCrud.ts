@@ -136,7 +136,11 @@ export function useCrud<T extends Record<string, any>>(
           if (value instanceof File) {
             body.append(key, value);
           } else if (value !== null && value !== undefined) {
-            body.append(key, String(value));
+            if (typeof value === "boolean") {
+              body.append(key, value ? "1" : "0");
+            } else {
+              body.append(key, String(value));
+            }
           }
         });
         // Do NOT set Content-Type header — fetch will automatically set multipart/form-data
@@ -181,17 +185,27 @@ export function useCrud<T extends Record<string, any>>(
       };
 
       let body: any;
+      let method: "PUT" | "POST" = "PUT";
       const hasFile = Object.values(data).some((v) => v instanceof File);
 
       if (hasFile) {
         body = new FormData();
+        body.append("_method", "PUT");
+
         Object.entries(data).forEach(([key, value]) => {
           if (value instanceof File) {
             body.append(key, value);
           } else if (value !== null && value !== undefined) {
-            body.append(key, String(value));
+            if (typeof value === "boolean") {
+              body.append(key, value ? "1" : "0");
+            } else {
+              body.append(key, String(value));
+            }
           }
         });
+
+        // Use POST when sending FormData
+        method = "POST";
       } else {
         body = data;
         headers["Content-Type"] = "application/json";
@@ -200,7 +214,7 @@ export function useCrud<T extends Record<string, any>>(
       const response = await $fetch<{ data: T }>(
         `${apiBase}/${endpoint}/${id}`,
         {
-          method: "PUT",
+          method,
           headers,
           body,
         }

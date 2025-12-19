@@ -1,51 +1,51 @@
 <!-- app/pages/badges/[id]/edit.vue -->
 <script setup lang="ts">
-import { badgesResource, type Badges } from '~/config/resources/badges'
+import { badgesResource, type Badges } from "~/config/resources/badges";
 
 definePageMeta({
-  title: 'Edit badge'
-})
+  title: "Edit badge",
+});
 
-const route = useRoute()
-const router = useRouter()
-const toast = useToast()
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
 
 // Get badge ID from route
-const badgeId = computed(() => route.params.id as string)
+const badgeId = computed(() => route.params.id as string);
 
 // Initialize CRUD composable
-const crud = useCrud<Badges>(badgesResource)
+const crud = useCrud<Badges>(badgesResource);
 
 // Fetch user data on mount
 onMounted(async () => {
-  await crud.fetchItem(badgeId.value)
-})
+  await crud.fetchItem(badgeId.value);
+});
 
 // Handle form submission
 const handleSubmit = async (data: Partial<Badges>) => {
   try {
-    await crud.updateItem(badgeId.value, data)
+    await crud.updateItem(badgeId.value, data);
 
     toast.add({
-      title: 'Success',
-      description: 'badge updated successfully',
-      class: 'text-green-600'
-    })
+      title: "Success",
+      description: "badge updated successfully",
+      class: "text-green-600",
+    });
 
     // Redirect to badge detail page
-    router.push(`/badges/${badgeId.value}`)
+    router.push(`/badges/${badgeId.value}`);
   } catch (err: any) {
-    let errorMessage = 'An unknown error occurred.';
+    let errorMessage = "An unknown error occurred.";
 
-    // 1. Check if the error object has an 'errors' property 
+    // 1. Check if the error object has an 'errors' property
     //    and that it is an object (like { fieldName: ['error1', 'error2'] })
-    if (err.errors && typeof err.errors === 'object') {
+    if (err.errors && typeof err.errors === "object") {
       // 2. Extract all error message arrays into a single, flat array
       const allErrors = Object.values(err.errors).flat();
 
       // 3. Join the errors using a newline character (\n) as the separator
       if (allErrors.length > 0) {
-        errorMessage = allErrors.join('\n');
+        errorMessage = allErrors.join("\n");
       } else if (err.message) {
         // Fallback to the main error message if 'errors' is empty
         errorMessage = err.message;
@@ -56,21 +56,21 @@ const handleSubmit = async (data: Partial<Badges>) => {
     }
 
     toast.add({
-      title: 'Error',
+      title: "Error",
       // Pass the concatenated string to the description
       description: errorMessage,
-      color: 'error', // Use a standard color name like 'danger' or 'red' if supported
+      color: "error", // Use a standard color name like 'danger' or 'red' if supported
       // class: 'text-red-600' // 'class' is often used for styling the toast container, not the text itself. Use 'color' prop if available.
-    })
+    });
 
-    console.error('Failed to update badge:', err)
+    console.error("Failed to update badge:", err);
   }
-}
+};
 
 // Handle cancel
 const handleCancel = () => {
-  router.push(`/badges/${badgeId.value}`)
-}
+  router.push(`/badges/${badgeId.value}`);
+};
 </script>
 
 <template>
@@ -79,7 +79,10 @@ const handleCancel = () => {
     <div>
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
         Edit badge
-        <div v-if="crud.item.value" class="mt-1 text-lg font-medium text-gray-500 dark:text-gray-400">
+        <div
+          v-if="crud.item.value"
+          class="mt-1 text-lg font-medium text-gray-500 dark:text-gray-400"
+        >
           {{ crud.item.value.name }}
         </div>
       </h1>
@@ -88,17 +91,24 @@ const handleCancel = () => {
       </p>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="crud.loading.value && !crud.item.value" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin w-8 h-8" />
-    </div>
-
     <!-- Form -->
-    <CrudForm v-else-if="crud.item.value" :config="badgesResource" :initial-data="crud.item.value"
-      :loading="crud.loading.value" :error="crud.error.value" mode="edit" @submit="handleSubmit"
-      @cancel="handleCancel" />
+    <CrudForm
+      :data-loading="crud.loading.value"
+      :config="badgesResource"
+      :initial-data="crud.item.value || undefined"
+      :loading="crud.loading.value"
+      :error="crud.error.value"
+      mode="edit"
+      @submit="handleSubmit"
+      @cancel="handleCancel"
+    />
 
     <!-- Error State -->
-    <UAlert v-else-if="crud.error.value" color="error" variant="soft" :title="crud.error.value.message" />
+    <UAlert
+      v-if="crud.error.value"
+      color="error"
+      variant="soft"
+      :title="crud.error.value.message"
+    />
   </div>
 </template>
