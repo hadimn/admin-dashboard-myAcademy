@@ -1,7 +1,5 @@
 <!-- app/pages/badges/create.vue -->
 <script setup lang="ts">
-import { badge } from '#build/ui'
-
 
 definePageMeta({
   title: 'Create badge'
@@ -56,7 +54,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :config="badgesResource"
       :loading="crud.loading.value"
       :error="crud.error.value"

@@ -5,6 +5,8 @@ const route = useRoute();
 
 const navigation = [
   { name: "Dashboard", to: "/", icon: "i-heroicons-home" },
+  { name: "Leaderboard", to: "/leaderboards", icon: "i-heroicons-trophy" },
+  { name: "admins" , to: "/admins", icon: "i-ic-outline-admin-panel-settings", key: 'admins'},
   { name: "Users", to: "/users", icon: "i-heroicons-users", key: 'users' },
   { name: "User Progress", to: "/userProgress", icon: "i-hugeicons-progress", key: 'user_progress' },
   { name: "courses", to: "/courses", icon: "i-heroicons-academic-cap", key: 'courses' },
@@ -15,6 +17,8 @@ const navigation = [
   { name: "questions", to: "/questions", icon: "i-healthicons-i-exam-multiple-choice-outline", key: 'questions' },
   { name: "answeredQuestions", to: "/answeredQuestions", icon: "i-heroicons-chat-bubble-left-right", key: 'answered_questions' },
   { name: "badges", to: "/badges", icon: "i-simple-line-icons-badge", key: 'badges' },
+  { name: "userBadges", to: "/userBadges", icon: "i-iconoir-user-badge-check", key: 'user_badges'},
+  { name: "enrollments", to: "/enrollments", icon: "i-streamline-give-gift", key: 'enrollments' },
   { name: "Analytics", to: "/analytics", icon: "i-heroicons-chart-bar" },
 ];
 

@@ -1,24 +1,39 @@
 <script setup lang="ts">
 const route = useRoute();
-const { admin, logout, loading } = useAdminAuth()
+const { admin, logout, loading } = useAdminAuth();
+const { $echo } = useNuxtApp();
+const notifications = useAdminNotifications();
 
 
-useHead({
-  meta: [
-    { property: "og:title", content: `${route.meta.title} - admin dashboard` },
-  ],
+// listen to events from laravel reverb notifications.
+// and push notification using toast.add()
+onMounted(() => {
+  $echo.channel("admin-notifications").listen(".user.created", (event: any) => {
+    console.log("EVENT RECEIVED:", event);
+    notifications.userCreated(event.user);
+  });
+  $echo
+    .channel("admin-notifications")
+    .listen(".user.done.lesson", (event: any) => {
+      console.log(event.message); // 🎉 John Doe has completed the lesson 'Intro to PHP' in course 'Laravel Basics'!
+      notifications.userDoneLesson({
+        name: event.user.name,
+        lesson_title: event.lesson.title,
+        course_title: event.course.title,
+      });
+    });
 });
 
 const showSidebar = ref(false);
 </script>
 
 <template>
-  <AdminSidebar 
-    :is-open="showSidebar" 
-    :admin="admin" 
-    :loading="loading" 
+  <AdminSidebar
+    :is-open="showSidebar"
+    :admin="admin"
+    :loading="loading"
     @close="showSidebar = false"
-    @logout="logout" 
+    @logout="logout"
   />
   <div class="min-h-screen lg:pl-72 bg-default">
     <AdminNavbar @toggle-sidebar="showSidebar = !showSidebar" />
@@ -30,5 +45,4 @@ const showSidebar = ref(false);
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

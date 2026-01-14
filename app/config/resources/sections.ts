@@ -31,19 +31,6 @@ export const sectionsResource: ResourceConfig<Section> = {
       showInDetail: true,
     },
     {
-      key: "course_id",
-      label: "Course ID",
-      type: "select",
-      required: true,
-      showInTable: true,
-      showInFormCreate: true,
-      showInFormEdit: true,
-      showInDetail: true,
-      resource: "courses",
-      optionLabel: "title",
-      optionValue: "course_id",
-    },
-    {
       key: "image_url",
       label: "Image URL",
       type: "file",
@@ -69,6 +56,19 @@ export const sectionsResource: ResourceConfig<Section> = {
         }
         return null;
       },
+    },
+    {
+      key: "course_id",
+      label: "Course",
+      type: "select",
+      required: true,
+      showInTable: true,
+      showInFormCreate: true,
+      showInFormEdit: true,
+      showInDetail: true,
+      resource: "courses",
+      optionLabel: "title",
+      optionValue: "course_id",
     },
     {
       key: "description",

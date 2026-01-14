@@ -64,7 +64,7 @@ const handleLogin = async () => {
         <template #header>
           <div class="text-center">
             <h1 class="flex just-center items-center flex-col text-2xl font-bold text-highlighted dark:text-white">
-              <ColorModeButton />
+              <ButtonsColorModeButton />
               Admin Login
             </h1>
             <p class="mt-2 text-sm text-muted dark:text-gray-400">

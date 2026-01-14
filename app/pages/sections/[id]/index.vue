@@ -83,7 +83,7 @@ const handleBack = () => {
     />
 
     <!-- Detail Card -->
-    <CrudDetail
+    <CrudsCrudDetail
       :config="sectionsResource"
       :item="crud.item.value"
       :loading="crud.loading.value"

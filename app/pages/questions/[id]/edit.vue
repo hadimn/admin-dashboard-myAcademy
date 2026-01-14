@@ -1,5 +1,7 @@
 <!-- app/pages/questions/[id]/edit.vue -->
 <script setup lang="ts">
+'~/components/cruds/CrudsCrudForm.vue';
+
 
 definePageMeta({
   title: "Edit questions",
@@ -91,7 +93,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :data-loading="crud.loading.value"
       :config="questionsResource"
       :initial-data="crud.item.value || undefined"

@@ -91,7 +91,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :data-loading="crud.loading.value"
       :config="lessonsResource"
       :initial-data="crud.item.value || undefined"

@@ -1,5 +1,7 @@
 <!-- app/pages/sections/[id]/edit.vue -->
 <script setup lang="ts">
+'~/components/cruds/CrudsCrudForm.vue';
+
 definePageMeta({
   title: "Edit Section",
 });
@@ -90,7 +92,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :config="sectionsResource"
       :initial-data="crud.item.value || undefined"
       :loading="crud.loading.value"

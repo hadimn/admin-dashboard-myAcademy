@@ -50,7 +50,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :data-loading="false"
       :config="unitsResource"
       :loading="crud.loading.value"

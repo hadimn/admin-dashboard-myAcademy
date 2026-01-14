@@ -1,4 +1,4 @@
-<!-- app/components/CrudTable.vue -->
+<!-- app/components/CrudsCrudTable.vue -->
 <script setup lang="ts" generic="T extends Record<string, any>">
 import SkeletonLoader from '~/components/skeleton/SkeletonLoader.vue';
 import type { ResourceConfig } from '~/types/crud'
@@ -27,6 +27,16 @@ const emit = defineEmits<{
   pageChange: [page: number]
 }>()
 
+const resourceMap: Record<string, ResourceConfig> = {
+  courses: coursesResource,
+  sections: sectionsResource,
+  units: unitsResource,
+  lessons: lessonsResource,
+  questions: questionsResource,
+  badges: badgesResource,
+  users: usersResource,
+};
+
 // Local page state for the pagination component
 const currentPage = computed({
   get: () => props.pagination.current_page,
@@ -38,6 +48,31 @@ const tableFields = computed(() =>
   props.config.fields.filter(f => f.showInTable !== false)
 )
 
+
+const remoteOptions = ref<Record<string, { label: string; value: any }[]>>({});
+
+// Fetch remote options for fields that require them without showing the id then showing the values one by one
+const fetchRemoteOptions = async () => {
+  for (const field of tableFields.value) {
+    if (field.resource && resourceMap[field.resource]) {
+      const config = resourceMap[field.resource];
+      const { fetchItems, items } = useCrud(config as any);
+
+      try {
+        await fetchItems(1, "");
+        remoteOptions.value[field.key] = items.value.map((item: any) => ({
+          label: item[field.optionLabel || "title"],
+          value: item[field.optionValue || "id"],
+        }));
+      } catch (e) {
+        console.error(`Failed to fetch options for ${field.key}`, e);
+      }
+    }
+  }
+};
+
+
+
 // Render cell value
 const renderCell = (item: T, field: any) => {
   const value = item[field.key];
@@ -47,7 +82,20 @@ const renderCell = (item: T, field: any) => {
   }
 
   if (value === null || value === undefined) {
-    return '-';
+    // if file then return avatar with the 2 letters of label
+    if (field.type == 'file') {
+      return `<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs font-medium">${field.label.substring(0, 2).toUpperCase()}</div>`;
+    }
+    return "-";
+  }
+
+  // return resource filed value instead of id
+  if (field.resource) {
+    const resourceConfig = resourceMap[field.resource];
+    const relatedItem = remoteOptions.value[field.key]?.find(
+      (option) => option.value === value
+    );
+    return relatedItem ? relatedItem.label : "-";
   }
 
   // Detect image (simple check for URL ending with image extension)
@@ -84,6 +132,10 @@ const renderCell = (item: T, field: any) => {
 const getItemId = (item: T) => {
   return item[props.config.idField || 'id']
 }
+
+onMounted(() => {
+  fetchRemoteOptions();
+});
 </script>
 
 <template>

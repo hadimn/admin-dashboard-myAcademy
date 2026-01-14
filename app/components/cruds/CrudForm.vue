@@ -1,7 +1,6 @@
-<!-- app/components/CrudForm.vue -->
+<!-- app/components/CrudsCrudForm.vue -->
 <script setup lang="ts" generic="T extends Record<string, any>">
 import type { ResourceConfig, ApiError } from "~/types/crud";
-import FormSkeletonLoader from "./skeleton/FormSkeletonLoader.vue";
 
 interface Props {
   config: ResourceConfig<T>;
@@ -402,7 +401,7 @@ const formatDateForInput = (dateString: any, type: string) => {
   if (!dateString) return "";
   const d = new Date(dateString);
   const iso = d.toISOString(); // 2025-12-18T15:49:00.000Z
-  
+
   if (type === 'date') {
     return iso.split('T')[0]; // 2025-12-18
   }
@@ -411,22 +410,66 @@ const formatDateForInput = (dateString: any, type: string) => {
   }
   return dateString;
 };
+
+const aiLoading = ref(false)
+
+const generateWithAI = async () => {
+  if (!props.config.aiGenerate?.enabled) return
+
+  aiLoading.value = true
+
+  const config = useRuntimeConfig();
+  const baseUrl = config.public.apiBaseUrl;
+
+  try {
+    const response: Record<string, any> = await $fetch(`${baseUrl}/ai/generate`, {
+      method: 'POST',
+      body: {
+        resource: props.config.name,
+        fields: props.config.aiGenerate.fields,
+        prompt: props.config.aiGenerate.prompt,
+        currentData: formData.value
+      }
+    })
+
+    // Merge AI data into form
+    Object.entries(response).forEach(([key, value]) => {
+      if (key in formData.value) {
+        formData.value[key] = value
+      }
+    })
+
+  } catch (e) {
+    console.error('AI generation failed', e)
+  } finally {
+    aiLoading.value = false
+  }
+}
+
 </script>
 
 <template>
   <UCard>
     <template #header>
-      <h3 class="text-lg font-semibold">
-        {{ mode === "create" ? "Create" : "Edit" }} {{ config.singularName }}
-      </h3>
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-semibold">
+          {{ mode === "create" ? "Create" : "Edit" }} {{ config.singularName }}
+        </h3>
+
+        <UButton v-if="mode === 'create' && config.aiGenerate?.enabled" icon="i-heroicons-sparkles" color="primary"
+          variant="soft" size="sm" @click="generateWithAI">
+          Generate with AI
+        </UButton>
+      </div>
     </template>
 
-    <FormSkeletonLoader v-if="dataLoading" :field-count="formFields.length" :columns="2" :show-header="false"
+    <SkeletonDetailsSkeletonLoader v-if="dataLoading" :field-count="formFields.length" :columns="2" :show-header="false"
       :show-actions="true" />
 
-    <UForm v-else @submit.prevent="handleSubmit" class="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <UForm v-else @submit.prevent="handleSubmit" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
       <!-- API Error Message -->
-      <UAlert v-if="error?.message" class="col-span-2" color="error" variant="soft" :title="error.message"
+      <UAlert v-if="error?.message" class="col-span-1 md:col-span-2" color="error" variant="soft" :title="error.message"
         :close-button="{
           icon: 'i-heroicons-x-mark-20-solid',
           color: 'red',
@@ -435,8 +478,7 @@ const formatDateForInput = (dateString: any, type: string) => {
 
       <!-- Form Fields -->
       <div v-for="field in formFields" :key="field.key" v-show="shouldShowField(field)"
-        :class="field.type === 'json' || field.type === 'textarea' ? 'col-span-2' : ''">
-
+        :class="field.type === 'json' || field.type === 'textarea' ? 'col-span-1 md:col-span-2' : 'col-span-1'">
         <!-- Text/Email/Password/Color Input -->
         <UFormField v-if="['text', 'email', 'password', 'color'].includes(field.type)" :label="field.label"
           :required="field.required" :error="getFieldError(field.key)">
@@ -460,7 +502,7 @@ const formatDateForInput = (dateString: any, type: string) => {
 
         <!-- Checkbox -->
         <UFormField v-else-if="field.type === 'checkbox'" :label="field.label" :error="getFieldError(field.key)">
-          <UCheckbox class="w-full" v-model="formData[field.key]" :label="field.label" />
+          <UCheckbox v-model="formData[field.key]" :label="field.label" />
         </UFormField>
 
         <!-- Date -->
@@ -504,25 +546,27 @@ const formatDateForInput = (dateString: any, type: string) => {
             </div>
 
             <div v-for="(option, index) in formData.options" :key="index"
-              class="flex gap-2 items-center bg-white dark:bg-gray-800 p-3 rounded-lg">
-              <span class="text-sm font-semibold text-gray-500 w-8">{{ String.fromCharCode(65 + index) }}.</span>
+              class="flex flex-col md:flex-row gap-2 items-start md:items-center bg-white dark:bg-gray-800 p-3 rounded-lg">
+              <span class="text-sm font-semibold text-gray-500 w-8 shrink-0">
+                {{ String.fromCharCode(65 + Number(index)) }}.
+              </span>
 
               <UInput v-model="option.text" placeholder="Enter option text" class="flex-1" />
 
               <!-- Radio for MCQ -->
               <div v-if="formData.question_type === 'mcq'" class="flex items-center gap-2">
                 <input type="radio" :name="`correct-answer-${field.key}`" :checked="option.is_correct"
-                  @change="toggleCorrectMCQ(index)" class="w-4 h-4 text-primary-600 cursor-pointer" />
+                  @change="toggleCorrectMCQ(Number(index))" class="w-4 h-4 text-primary-600 cursor-pointer" />
                 <label class="text-xs text-gray-600">Correct</label>
               </div>
 
               <!-- Checkbox for multiple answers -->
               <div v-else-if="formData.question_type === 'checkbox'" class="flex items-center gap-2">
-                <UCheckbox v-model="option.is_correct" @change="toggleCorrectCheckbox(index)" label="Correct" />
+                <UCheckbox v-model="option.is_correct" @change="toggleCorrectCheckbox(Number(index))" label="Correct" />
               </div>
 
               <UButton v-if="formData.options.length > 2" icon="i-heroicons-trash" size="xs" color="error"
-                variant="ghost" @click="removeOption(index)" />
+                variant="ghost" @click="removeOption(Number(index))" />
             </div>
 
             <p v-if="formData.correct_answer && formData.correct_answer.length > 0" class="text-xs text-green-600 mt-2">
@@ -536,7 +580,7 @@ const formatDateForInput = (dateString: any, type: string) => {
           v-else-if="field.type === 'json' && field.key === 'correct_answer' && !needsOptions(formData.question_type)"
           :label="field.label" :required="field.required" :error="getFieldError(field.key)">
           <div class="space-y-2">
-            <!-- For True/False -->
+            <!-- True/False -->
             <div v-if="formData.question_type === 'torf'">
               <USelect v-model="formData.correct_answer[0]" :items="[
                 { label: 'True', value: 'true' },
@@ -544,13 +588,13 @@ const formatDateForInput = (dateString: any, type: string) => {
               ]" placeholder="Select correct answer" />
             </div>
 
-            <!-- For Fill in the Blanks -->
+            <!-- Fill in the Blanks -->
             <div v-else-if="formData.question_type === 'fill'">
               <UInput v-model="formData.correct_answer[0]" placeholder="Enter the correct answer" />
               <p class="text-xs text-gray-500 mt-1">Enter the word/phrase that fills the blank</p>
             </div>
 
-            <!-- For Matching -->
+            <!-- Matching -->
             <div v-else-if="formData.question_type === 'matching'">
               <UTextarea v-model="formData.correct_answer[0]" :rows="4"
                 placeholder="Enter matching pairs (e.g., A-1, B-2, C-3)" />
@@ -559,35 +603,26 @@ const formatDateForInput = (dateString: any, type: string) => {
           </div>
         </UFormField>
 
-        <!-- JSON Field: Badge Criteria (handled separately below) -->
-        <div v-else-if="field.type === 'json' && field.key === 'criteria'">
-          <!-- This is handled by the special criteria field below -->
-        </div>
-
         <!-- Generic JSON Field (fallback) -->
         <UFormField v-else-if="field.type === 'json'" :label="field.label" :required="field.required"
           :error="getFieldError(field.key)">
           <UTextarea :model-value="JSON.stringify(formData[field.key], null, 2)" @update:model-value="(val: string) => {
-            try {
-              formData[field.key] = JSON.parse(val);
-            } catch (e) {
-              // Invalid JSON
-            }
-          }" :rows="6" placeholder="{}" class="font-mono text-sm" />
+            try { formData[field.key] = JSON.parse(val); } catch (e) { }
+          }" :rows="6" placeholder="{}" class="font-mono text-sm w-full" />
         </UFormField>
       </div>
 
       <!-- Special Criteria Field (for badges) -->
       <UFormField v-if="currentCriteriaKey"
         :label="`${currentCriteriaKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`" required
-        :error="getFieldError('criteria')">
+        :error="getFieldError('criteria')" class="col-span-1 md:col-span-2">
         <UInput class="w-full" type="number" v-model.number="formData.criteria[currentCriteriaKey]"
           :placeholder="`Enter ${currentCriteriaKey.replace(/_/g, ' ')}`"
           @blur="validateField({ key: 'criteria', required: true })" />
       </UFormField>
 
       <!-- Form Actions -->
-      <div class="flex justify-end gap-3 pt-4 w-full col-span-1 md:col-span-2">
+      <div class="flex flex-col md:flex-row justify-end gap-3 pt-4 w-full col-span-1 md:col-span-2">
         <UButton type="button" color="neutral" variant="ghost" @click="emit('cancel')" :disabled="loading">
           Cancel
         </UButton>

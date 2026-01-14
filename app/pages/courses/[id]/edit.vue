@@ -1,5 +1,6 @@
 <!-- app/pages/courses/[id]/edit.vue -->
 <script setup lang="ts">
+
 definePageMeta({
   title: "Edit course",
 });
@@ -90,7 +91,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :config="coursesResource"
       :initial-data="crud.item.value || undefined"
       :data-loading="crud.loading.value && !crud.item.value"

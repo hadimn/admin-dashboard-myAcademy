@@ -125,7 +125,7 @@ const cancelDelete = () => {
     />
 
     <!-- Table -->
-    <CrudTable
+    <CrudsCrudTable
       :config="userProgressResource"
       :items="[...crud.items.value]"
       :loading="crud.loading.value"

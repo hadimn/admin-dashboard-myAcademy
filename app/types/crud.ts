@@ -17,18 +17,26 @@ export interface ResourceField {
   optionValue?: string
   fileType?: "image" | "video"
   // JSON field specific - for custom rendering in forms
-  jsonType?: 'options' | 'correct_answer' | 'criteria' | 'custom'
+  jsonType?: 'options' | 'correct_answer' | 'criteria' | 'custom',
+}
+
+export interface AIGenerateConfig {
+  enabled: boolean
+  prompt?: string
+  fields?: string[] // which fields AI is allowed to fill
 }
 
 export interface ResourceConfig<T = any> {
   name: string // e.g., 'users'
   singularName: string // e.g., 'user'
   endpoint: string // API endpoint
-  fields: ResourceField[]
   idField?: string // Default: 'id'
   searchable?: boolean
   sortable?: boolean
   perPage?: number
+  fields: ResourceField[] // input fields 
+
+  aiGenerate?: AIGenerateConfig
 }
 
 export interface PaginatedResponse<T> {

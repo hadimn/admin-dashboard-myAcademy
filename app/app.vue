@@ -14,12 +14,6 @@ useHead({
   },
 });
 
-useHead({
-  titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} - admin dashboard` : "admin dashboard";
-  },
-});
-
 const toaster = { position: 'top-right' } as const;
 </script>
 

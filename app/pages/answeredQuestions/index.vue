@@ -125,7 +125,7 @@ const cancelDelete = () => {
     />
 
     <!-- Table -->
-    <CrudTable
+    <CrudsCrudTable
       :config="answeredQuestionsResource"
       :items="[...crud.items.value]"
       :loading="crud.loading.value"

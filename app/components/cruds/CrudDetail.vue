@@ -1,7 +1,6 @@
-<!-- app/components/CrudDetail.vue -->
+<!-- app/components/CrudsCrudDetail.vue -->
 <script setup lang="ts" generic="T extends Record<string, any>">
 import type { ResourceConfig } from "~/types/crud";
-import DetailsSkeletonLoader from "./skeleton/DetailsSkeletonLoader.vue";
 
 interface Props {
   config: ResourceConfig<T>;
@@ -91,7 +90,7 @@ const formatJson = (value: any) => {
       </div>
     </template>
 
-    <DetailsSkeletonLoader v-if="loading" :field-count="detailFields.length" :show-header="false"
+    <SkeletonDetailsSkeletonLoader v-if="loading" :field-count="detailFields.length" :show-header="false"
       :show-footer="false" />
 
     <div v-else-if="!item" class="text-center py-8 text-gray-500">

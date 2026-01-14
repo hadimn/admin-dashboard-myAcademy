@@ -1,5 +1,6 @@
 // app/config/resources/users.ts
 import type { ResourceConfig } from "~/types/crud";
+import { CourseLanguages } from "~~/constants/CourseLanguages";
 
 export interface Courses {
   course_id: number;
@@ -21,6 +22,11 @@ export const coursesResource: ResourceConfig<Courses> = {
   sortable: true,
   idField: "course_id",
   perPage: 15,
+  aiGenerate: {
+    enabled: true,
+    fields: ["title", "description", "language"],
+    prompt: `Generate a professional online course. Return concise, high-quality educational content.`,
+  },
   fields: [
     {
       key: "course_id",
@@ -51,7 +57,7 @@ export const coursesResource: ResourceConfig<Courses> = {
       showInFormEdit: true,
       showInFormCreate: true,
       showInDetail: true,
-      fileType:"video",
+      fileType: "video",
     },
     {
       key: "title",
@@ -89,12 +95,7 @@ export const coursesResource: ResourceConfig<Courses> = {
       key: "language",
       label: "Language",
       type: "select",
-      options: [
-        { label: "English", value: "en" },
-        { label: "Spanish", value: "es" },
-        { label: "French", value: "fr" },
-        { label: "Arabic", value: "ar" },
-      ],
+      options: CourseLanguages,
       required: true,
       showInTable: true,
       showInFormEdit: true,

@@ -92,7 +92,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :data-loading="crud.loading.value"
       :config="badgesResource"
       :initial-data="crud.item.value || undefined"
@@ -101,14 +101,6 @@ const handleCancel = () => {
       mode="edit"
       @submit="handleSubmit"
       @cancel="handleCancel"
-    />
-
-    <!-- Error State -->
-    <UAlert
-      v-if="crud.error.value"
-      color="error"
-      variant="soft"
-      :title="crud.error.value.message"
     />
   </div>
 </template>

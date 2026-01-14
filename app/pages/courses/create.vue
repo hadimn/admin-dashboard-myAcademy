@@ -1,6 +1,7 @@
 <!-- app/pages/courses/create.vue -->
 <script setup lang="ts">
 
+
 definePageMeta({
   title: 'Create course'
 })
@@ -27,7 +28,12 @@ const handleSubmit = async (data: Partial<Courses>) => {
     
     // Redirect to courses list
     router.push('/courses')
-  } catch (error) {
+  } catch (error: any) {
+    toast.add({
+      title: 'error?.message',
+      description: `${error?.errors}`,
+      color: 'error'
+    })
     // Error is already set in crud.error by the composable
     console.error('Failed to create courses:', error)
   }
@@ -53,7 +59,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :config="coursesResource"
       :loading="crud.loading.value"
       :error="crud.error.value"

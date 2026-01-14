@@ -1,23 +1,13 @@
 <template>
-  <header class="sticky top-0 z-40 flex h-16 items-center gap-2 sm:gap-4 border-b border-default bg-elevated px-4 sm:px-6 lg:px-8">
+  <header
+    class="sticky top-0 z-40 flex h-16 items-center gap-2 sm:gap-4 border-b border-default bg-elevated px-4 sm:px-6 lg:px-8">
     <!-- Sidebar Toggle -->
-    <UButton 
-      icon="i-heroicons-bars-3" 
-      color="neutral" 
-      variant="ghost" 
-      class="lg:hidden"
-      @click="$emit('toggleSidebar')" 
-    />
+    <UButton icon="i-heroicons-bars-3" color="neutral" variant="ghost" class="lg:hidden"
+      @click="$emit('toggleSidebar')" />
 
     <!-- Search Trigger - Desktop (Full Button) -->
     <div class="flex-1 hidden md:block">
-      <UButton
-        @click="isSearchOpen = true"
-        color="neutral"
-        variant="outline"
-        block
-        class="justify-start"
-      >
+      <UButton @click="isSearchOpen = true" color="neutral" variant="outline" block class="justify-start">
         <template #leading>
           <UIcon name="i-heroicons-magnifying-glass" />
         </template>
@@ -29,15 +19,8 @@
     </div>
 
     <!-- Search Trigger - Mobile (Icon Only) -->
-    <UButton
-      @click="isSearchOpen = true"
-      icon="i-heroicons-magnifying-glass"
-      color="neutral"
-      variant="ghost"
-      size="md"
-      class="md:hidden"
-      aria-label="Search"
-    />
+    <UButton @click="isSearchOpen = true" icon="i-heroicons-magnifying-glass" color="neutral" variant="ghost" size="md"
+      class="md:hidden" aria-label="Search" />
 
     <!-- Spacer for mobile to push items to right -->
     <div class="flex-1 md:hidden"></div>
@@ -45,30 +28,18 @@
     <!-- Search Modal -->
     <UModal v-model:open="isSearchOpen">
       <template #content>
-        <UCommandPalette
-          v-model="selectedPage"
-          v-model:search-term="searchTerm"
-          :groups="searchGroups"
-          placeholder="Search pages..."
-          :class="['transition-all', isMobile ? 'h-[70vh]' : 'h-80']"
-          close
-          @update:model-value="handlePageSelect"
-          @update:open="isSearchOpen = $event"
-        />
+        <UCommandPalette v-model="selectedPage" v-model:search-term="searchTerm" :groups="searchGroups"
+          placeholder="Search pages..." :class="['transition-all', isMobile ? 'h-[70vh]' : 'h-80']" close
+          @update:model-value="handlePageSelect" @update:open="isSearchOpen = $event" />
       </template>
     </UModal>
 
     <!-- Notifications & Actions -->
     <div class="flex items-center gap-1 sm:gap-2">
-      <ColorModeButton />
+      <ButtonsColorModeButton />
 
       <!-- Notification Bell - Show on all screens -->
-      <UButton 
-        icon="i-heroicons-bell" 
-        color="neutral" 
-        variant="ghost" 
-        :badge="3"
-      />
+      <UButton icon="i-heroicons-bell" color="neutral" variant="ghost" :badge="3" />
 
       <UDropdownMenu :items="notificationItems">
         <UButton icon="i-heroicons-ellipsis-vertical" color="neutral" variant="ghost" />
@@ -78,13 +49,7 @@
             <p class="mb-1 text-xs font-medium text-muted">
               Language
             </p>
-            <USelect 
-              class="w-full" 
-              v-model="currentLocale" 
-              :items="localeItems" 
-              option-attribute="label" 
-              size="sm" 
-            />
+            <USelect class="w-full" v-model="currentLocale" :items="localeItems" option-attribute="label" size="sm" />
           </div>
         </template>
       </UDropdownMenu>
@@ -112,7 +77,7 @@ const pages = [
     id: 'dashboard',
     label: 'Dashboard',
     icon: 'i-heroicons-home',
-    to: '/dashboard',
+    to: '/',
     description: 'Overview and statistics'
   },
   {
@@ -164,6 +129,84 @@ const pages = [
     to: '/userProgress',
     description: 'User and their progress'
   },
+  {
+    id: 'units',
+    label: 'Units',
+    icon: 'i-heroicons-cube',
+    to: '/units',
+    description: 'units of each section',
+  },
+  {
+    id: 'coursepricing',
+    label: 'course pricing',
+    icon: 'i-heroicons-currency-dollar',
+    to: '/coursePricing',
+    description: 'prices of courses',
+  },
+  {
+    id: 'sections',
+    label: 'sections',
+    icon: 'i-heroicons-squares-2x2',
+    to: '/sections',
+    description: 'sections of each course',
+  },
+  {
+    id: 'lessons',
+    label: 'Lessons',
+    icon: 'i-heroicons-book-open',
+    to: '/lessons',
+    description: 'lessons of each unit',
+  },
+  {
+    id: 'questions',
+    label: 'Questions',
+    icon: 'i-healthicons-i-exam-multiple-choice-outline',
+    to: '/questions',
+    description: 'questions of each lesson',
+  },
+  {
+    id: 'answeredQuestions',
+    label: 'Answered Questions',
+    icon: 'i-heroicons-chat-bubble-left-right',
+    to: '/answeredQuestions',
+    description: 'answered questions of each lesson',
+  },
+  {
+    id: 'badges',
+    label: 'Badges',
+    icon: 'i-simple-line-icons-badge',
+    to: '/badges',
+    description: 'Badges users can earn',
+  },
+  {
+    id: 'enrollments',
+    label: 'Enrollments',
+    icon: 'i-heroicons-user-group',
+    to: '/enrollments',
+    description: 'User enrollments in courses',
+  },
+  {
+    id: 'admins',
+    label: 'Admins',
+    icon: 'i-ic-outline-admin-panel-settings',
+    to: '/admins',
+    description: 'Admins and their permissions',
+  },
+  {
+    id: 'leaderboard',
+    label: 'Leaderboard',
+    icon: 'i-heroicons-trophy',
+    to: '/leaderboards',
+    description: 'User points leaderboard'
+  },
+  {
+    id: 'userbadges',
+    label: 'User Badges',
+    icon: 'i-iconoir-user-badge-check',
+    to: '/userBadges',
+    description: 'User badges and their progress',
+  },
+  
   // Add more pages as needed
 ];
 

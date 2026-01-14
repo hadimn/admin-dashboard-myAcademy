@@ -1,6 +1,7 @@
 <!-- app/pages/coursePricing/create.vue -->
 <script setup lang="ts">
 
+
 definePageMeta({
   title: 'Create Course Pricing'
 })
@@ -50,7 +51,7 @@ const handleCancel = () => {
     </div>
 
     <!-- Form -->
-    <CrudForm
+    <CrudsCrudForm
       :data-loading="false"
       :config="CoursePricingResource"
       :loading="crud.loading.value"
